@@ -1,0 +1,122 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: rgb(40, 39, 39);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+h3 {
+  font-size: 24px;
+}
+
+header h1 {
+  text-align: center;
+  margin-top: 16px;
+  margin-bottom: 56px;
+  font-size: 56px;
+}
+
+div.ancestor-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 0px 34px;
+
+  display: flex;
+  gap: 64px;
+}
+
+div.input-container, div.booklist-container {
+  width: 50%;
+}
+
+.basic-style-input {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  border: 1.5px solid rgb(234, 234, 234);
+  outline: 0;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  background-color: whitesmoke;
+}
+
+.basic-style-input:focus {
+  border: 1.5px solid lightskyblue;
+  outline: 0.5px solid lightcyan;
+}
+
+.action-button-container {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.book {
+  padding: 16px;
+  border: 1px solid rgba(169, 169, 169, 0.607);
+  margin-top: 16px;
+}
+
+.done-reading{
+  background-color: rgba(169, 169, 169, 0.607);
+  opacity: 0.5;
+}
+
+.done {
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border: 1px solid rgb(12, 216, 158);
+  background-color: rgb(232, 239, 232);
+  color: rgb(12, 216, 158);
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.cancel {
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border: 1px solid rgb(216, 12, 124);
+  background-color: rgb(243, 235, 239);
+  color: rgb(216, 12, 124);
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.done:hover, .cancel:hover {
+  opacity: 0.6;
+}
+
+
+#submit-button {
+  display: block;
+  width: 100%;
+  margin-top: 24px;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border: 1px solid lightblue;
+  color: deepskyblue;
+  background-color: lightcyan;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+#submit-button:hover{
+  opacity: 0.7;
+}
