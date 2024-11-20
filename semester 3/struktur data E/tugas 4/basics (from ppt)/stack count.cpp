@@ -1,0 +1,1 @@
+return (stack.count)
