@@ -1,0 +1,14 @@
+    sebuah perusahaan farmasi mempunyai beberapa karyawan disetiap cabangnya. 
+    setiap karyawan hanya bisa bekerja di satu cabang, 
+    karyawan di perusahaan tsb digolongkan menjadi 3 golongan: 
+    golongan a mempunyai gaji = diatas 10 jt, 
+    golongan b mempunyai gaji = antara 5 - 10 jt, 
+    golongan c mempunyai gaji = dibawah 5 juta. 
+    
+    setiap cabang mempunyai seorang manager, manager gajinya : 
+    mempunya golongan a = cabang berada di kota" yg berada di jawa timur.    
+    
+    
+    
+    1. buatlah tablenya menggunakan aplikasi dan link kan antar table kemudian tampilkan karyawan yang mempunyai gaji diatas 5 jt,
+    2. tampilkan cabang yang mempunyai karyawaan paling banyak 
