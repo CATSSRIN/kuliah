@@ -24,11 +24,11 @@ void buat_queue_baru(Queue *queue);
 
 //========================================================
 
-#define MAX_QUEUE_SIZE 3 // Limit queue size to 3
+#define MAX_QUEUE_SIZE 3 
 
 int main()
 {
-    Queue *queues[10] = { NULL }; // Supports up to 10 queues
+    Queue *queues[10] = { NULL }; 
     int queue_count = 1, active_queue = -1;
     char pilih;
 
@@ -49,9 +49,13 @@ int main()
         case '1':
             buat_queue_baru(queues, &queue_count);
             break;
+
+            
         case '2':
             delete_queue(queues, &queue_count);
             break;
+
+
         case '3':
             printf("Pilih queue (0-%d): ", queue_count - 1);
             fflush(stdin);
@@ -61,30 +65,40 @@ int main()
                 active_queue = -1;
             }
             break;
+
+
         case '4':
             if (active_queue != -1)
                 nambah(queues[active_queue]);
             else
                 printf("Tidak ada queue aktif. Buat atau pilih queue dahulu.\n");
             break;
+
+
         case '5':
             if (active_queue != -1)
                 mengurangi(queues[active_queue]);
             else
                 printf("Tidak ada queue aktif. Buat atau pilih queue dahulu.\n");
             break;
+
+
         case '6':
             if (active_queue != -1)
                 print_all(queues[active_queue]);
             else
                 printf("Tidak ada queue aktif. Buat atau pilih queue dahulu.\n");
             break;
+
+
         case '7':
             if (active_queue != -1)
                 buat_queue_baru(queues[active_queue]);
             else
                 printf("Tidak ada queue aktif. Buat atau pilih queue dahulu.\n");
             break;
+
+
         case 'q':
             printf("Keluar dari program.\n");
             break;
@@ -93,7 +107,7 @@ int main()
         }
     } while (pilih != 'q');
 
-    // Free all queues
+   
     for (int i = 0; i < queue_count; i++) {
         if (queues[i] != NULL) {
             while (queues[i]->head != NULL)
