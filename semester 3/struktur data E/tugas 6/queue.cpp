@@ -2,127 +2,103 @@
 #include <stdlib.h>
 
 struct node {
-  int data; 
+    int data;
     struct node *next;
 };
+
 typedef struct node node;
 
-void tambahawal(node **head);
-void tambahdata(node **head);
-void transverse(node *head);
+void enqueue(node **front, node **rear);
+void dequeue(node **front, node **rear);
+void printQueue(node *front);
 
-int main()
-{
-    node *head;
+int main() {
+    node *front = NULL, *rear = NULL;
     char pilih;
-    do{
-      system("cls");
-      printf("masukkan pilihan\n");
-      printf("1. tambah data di awal\n");
-      printf("2. tambah data di tengah list\n");
-      printf("4. cetak isi list\n");
-      printf("masukkan pilihan (ketik q untuk keluar : )\n");
-      fflush(stdin);
+    do {
+        system("cls");
+        printf("Masukkan pilihan:\n");
+        printf("1. Enqueue (Tambah data ke belakang)\n");
+        printf("2. Dequeue (Hapus data dari depan)\n");
+        printf("3. Cetak isi queue\n");
+        printf("Masukkan pilihan (ketik q untuk keluar): ");
+        fflush(stdin);
 
-      scanf ("%c", &pilih);
-      if (pilih == "1")
-        tambahawal(&head);
+        scanf("%c", &pilih);
+        if (pilih == '1')
+            enqueue(&front, &rear);
+        else if (pilih == '2')
+            dequeue(&front, &rear);
+        else if (pilih == '3')
+            printQueue(front);
+        getch();
+    } while (pilih != 'q');
 
-      else if (tambahdata == "2")
-          tambahdata(&head);
-        
-      else if (pilih == "4")
-        transverse(head);
+    return 0;
+}
+
+void enqueue(node **front, node **rear) {
+    int bil;
+    node *pNew;
+
+    system("cls");
+    printf("Masukkan bilangan: ");
+    fflush(stdin);
+    scanf("%d", &bil);
+
+    pNew = (node *)malloc(sizeof(node));
+
+    if (pNew != NULL) {
+        pNew->data = bil;
+        pNew->next = NULL;
+
+        if (*rear == NULL) {
+            // If queue is empty, both front and rear point to the new node
+            *front = *rear = pNew;
+        } else {
+            // Add the new node at the end (rear)
+            (*rear)->next = pNew;
+            *rear = pNew;
+        }
+    } else {
+        printf("Alokasi memori gagal!\n");
         getch();
     }
-} while (pilih != "q");
-
-return 0;
 }
 
-void tambahawal(node **head){
-  int bil;
-  node *pNew;
+void dequeue(node **front, node **rear) {
+    node *temp;
 
-  system("cls");
-  fflush(stdin);
-  printf("masukkan bilangan : ");
-  fflush(stdin);
-  scanf("%d", &bil);
-  pNew = (node *)malloc(sizeof(node));
-
-  if (pNew != NULL){
-    pNew->data = bil;
-    pNew->next = NULL;
-    //add before first logical node or to an empty list
-    pNew -> next = *head;
-    *head = pNew;
-  }
-  else{
-    printf("Alokasi memori gagal");
+    system("cls");
+    if (*front == NULL) {
+        printf("Queue kosong! Tidak dapat dequeue.\n");
+    } else {
+        // Remove the front node
+        temp = *front;
+        *front = (*front)->next;
+        if (*front == NULL) {
+            // If queue becomes empty, set rear to NULL as well
+            *rear = NULL;
+        }
+        printf("Data yang dikeluarkan: %d\n", temp->data);
+        free(temp);
+    }
     getch();
-  }
 }
 
-void tambahdata(node **head){
-  int pos, bil;
-  node *pNew, *pCur;
+void printQueue(node *front) {
+    node *pWalker;
 
-  system("cls");
-  transverse(*head);
-  printf("\nposisi penyisipan setelah data bernilai : ");
-  fflush(stdin);
-  scanf("%d", &pos);
-  printf("\nbilangan : ");
-  fflush(stdin);
-  scanf("%d", &bil);
-
-  pCur = *head;
-  while (pCur != NULL && pCur -> data != pos) {
-    pCur = pCur -> next;
-  }
-
-  pNew = (node *)malloc(sizeof(node));
-
-  if (pCur == NULL){
-    printf("\nnode tidak ditemukan");
-    getch();
-  }
-  else if (pNew == NULL){
-    printf("\nalokasi memeori gagal");
-    getch();
-  }
-  else{
-    pNew->data = bil;
-    pNew->next = NULL;
-    pNew -> next = pCur -> next;
-    pCur -> next = pNew;
-  }
+    system("cls");
+    if (front == NULL) {
+        printf("Queue kosong!\n");
+    } else {
+        printf("Isi queue: ");
+        pWalker = front;
+        while (pWalker != NULL) {
+            printf("%d -> ", pWalker->data);
+            pWalker = pWalker->next;
+        }
+        printf("NULL\n");
+    }
 }
-
-void transverse(node *head){
-  node *pWalker;
-
-  pWalker = head;
-  while (pWalker != NULL) {
-    printf("%d -> ", pWalker->data);
-    pWalker = pWalker->next;
-  }
-  printf("NULL\n");
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
