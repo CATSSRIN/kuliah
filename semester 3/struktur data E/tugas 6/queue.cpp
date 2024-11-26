@@ -41,6 +41,66 @@ int main()
 return 0;
 }
 
+void tambahawal(node **head){
+  int bil;
+  node *pNew;
+
+  system("cls");
+  fflush(stdin);
+  printf("masukkan bilangan : ");
+  fflush(stdin);
+  scanf("%d", &bil);
+  pNew = (node *)malloc(sizeof(node));
+
+  if (pNew != NULL){
+    pNew->data = bil;
+    pNew->next = NULL;
+    //add before first logical node or to an empty list
+    pNew -> next = *head;
+    *head = pNew;
+  }
+  else{
+    printf("Alokasi memori gagal");
+    getch();
+  }
+}
+
+void tambahdata(node **head){
+  int pos, bil;
+  node *pNew, *pCur;
+
+  system("cls");
+  transverse(*head);
+  printf("\nposisi penyisipan setelah data bernilai : ");
+  fflush(stdin);
+  scanf("%d", &pos);
+  printf("\nbilangan : ");
+  fflush(stdin);
+  scanf("%d", &bil);
+
+  pCur = *head;
+  while (pCur != NULL && pCur -> data != pos) {
+    pCur = pCur -> next;
+  }
+
+  pNew = (node *)malloc(sizeof(node));
+
+  if (pCur == NULL){
+    printf("\nnode tidak ditemukan");
+    getch();
+  }
+  else if (pNew == NULL){
+    printf("\nalokasi memeori gagal");
+    getch();
+  }
+  else{
+    pNew->data = bil;
+    pNew->next = NULL;
+    pNew -> next = pCur -> next;
+    pCur -> next = pNew;
+  }
+}
+
 
 
 
