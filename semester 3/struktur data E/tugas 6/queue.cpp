@@ -9,46 +9,114 @@ struct node {
 };
 typedef struct node node;
 
-void nambah(node **head, node **tail);
-void mengurangi(node **head, node **tail);
-void print_all(node *head);
+typedef struct {
+    node *head;
+    node *tail;
+    int count;
+} Queue;
+
+void nambah(Queue *queue);
+void mengurangi(Queue *queue);
+void print_all(Queue *queue);
+void create_new_queue(Queue **queues, int *queue_count);
+void delete_queue(Queue **queues, int *queue_count);
+void count_data(Queue *queue);
 
 //========================================================
 
+#define MAX_QUEUE_SIZE 3 // Limit queue size to 3
+
 int main()
 {
-    node *head, *tail;
+    Queue *queues[10] = { NULL }; // Supports up to 10 queues
+    int queue_count = 0, active_queue = -1;
     char pilih;
 
-    head = tail = NULL;
     do {
-        printf("\nmasukkan pilihan\n");
-        printf("1. Tambahkan nomor\n");
-        printf("2. Habus nomor depan\n");
-        printf("3. cetak isi queue\n");
+        printf("\nMenu:\n");
+        printf("1. Buat antrean baru\n");
+        printf("2. Hapus antrean\n");
+        printf("3. Pilih antrean aktif\n");
+        printf("4. Tambahkan nomor (ke antrean aktif)\n");
+        printf("5. Hapus nomor depan (dari antrean aktif)\n");
+        printf("6. Cetak isi antrean aktif\n");
+        printf("7. Hitung jumlah data di antrean aktif\n");
         printf("MASUKKAN PILIHAN (tekan q untuk keluar) : ");
         fflush(stdin);
         scanf(" %c", &pilih);
-        if (pilih == '1')
-             nambah(&head, &tail);
-        else if (pilih == '2')
-            mengurangi(&head, &tail);
-        else if (pilih == '3') {
-            print_all(head);
-            getchar();  
+
+        switch (pilih) {
+        case '1':
+            create_new_queue(queues, &queue_count);
+            break;
+        case '2':
+            delete_queue(queues, &queue_count);
+            break;
+        case '3':
+            printf("Pilih antrean (0-%d): ", queue_count - 1);
+            fflush(stdin);
+            scanf("%d", &active_queue);
+            if (active_queue < 0 || active_queue >= queue_count || queues[active_queue] == NULL) {
+                printf("Antrean tidak valid\n");
+                active_queue = -1;
+            }
+            break;
+        case '4':
+            if (active_queue != -1)
+                nambah(queues[active_queue]);
+            else
+                printf("Tidak ada antrean aktif. Buat atau pilih antrean dahulu.\n");
+            break;
+        case '5':
+            if (active_queue != -1)
+                mengurangi(queues[active_queue]);
+            else
+                printf("Tidak ada antrean aktif. Buat atau pilih antrean dahulu.\n");
+            break;
+        case '6':
+            if (active_queue != -1)
+                print_all(queues[active_queue]);
+            else
+                printf("Tidak ada antrean aktif. Buat atau pilih antrean dahulu.\n");
+            break;
+        case '7':
+            if (active_queue != -1)
+                count_data(queues[active_queue]);
+            else
+                printf("Tidak ada antrean aktif. Buat atau pilih antrean dahulu.\n");
+            break;
+        case 'q':
+            printf("Keluar dari program.\n");
+            break;
+        default:
+            printf("Pilihan tidak valid.\n");
         }
     } while (pilih != 'q');
+
+    // Free all queues
+    for (int i = 0; i < queue_count; i++) {
+        if (queues[i] != NULL) {
+            while (queues[i]->head != NULL)
+                mengurangi(queues[i]);
+            free(queues[i]);
+        }
+    }
 
     return 0;
 }
 
 //========================================================
 
-void nambah(node **head, node **tail) {
+void nambah(Queue *queue) {
+    if (queue->count >= MAX_QUEUE_SIZE) {
+        printf("Antrean penuh.\n");
+        return;
+    }
+
     int bil;
     node *pNew;
 
-    printf("masukkan bilangan : ");
+    printf("Masukkan bilangan: ");
     fflush(stdin);
     scanf("%d", &bil);
     pNew = (node *)malloc(sizeof(node));
@@ -56,46 +124,93 @@ void nambah(node **head, node **tail) {
     if (pNew != NULL) {
         pNew->data = bil;
         pNew->next = NULL;
-        if (*tail != NULL) {
-            (*tail)->next = pNew;
+        if (queue->tail != NULL) {
+            queue->tail->next = pNew;
         }
-        *tail = pNew;
-        if (*head == NULL) {
-            *head = pNew;
+        queue->tail = pNew;
+        if (queue->head == NULL) {
+            queue->head = pNew;
         }
+        queue->count++;
     } else {
-        printf("Alokasi memori gagal");
-        getchar();  
+        printf("Alokasi memori gagal.\n");
     }
 }
 
 //========================================================
 
-void mengurangi(node **head, node **tail) {
-    node *pDel;
-
-    if (*head != NULL) {
-        pDel = *head;
-        *head = (*head)->next;
-        if (*head == NULL) {
-            *tail = NULL;
+void mengurangi(Queue *queue) {
+    if (queue->head != NULL) {
+        node *pDel = queue->head;
+        queue->head = queue->head->next;
+        if (queue->head == NULL) {
+            queue->tail = NULL;
         }
         free(pDel);
+        queue->count--;
     } else {
-        printf("Queue kosong");
-        getchar();  
+        printf("Antrean kosong.\n");
     }
 }
 
 //========================================================
 
-void print_all(node *head) {
-    node *pWalker;
+void print_all(Queue *queue) {
+    if (queue->head == NULL) {
+        printf("Antrean kosong.\n");
+        return;
+    }
 
-    pWalker = head;
+    node *pWalker = queue->head;
     while (pWalker != NULL) {
         printf("%d -> ", pWalker->data);
         pWalker = pWalker->next;
     }
     printf("NULL\n");
+}
+
+//========================================================
+
+void create_new_queue(Queue **queues, int *queue_count) {
+    if (*queue_count >= 10) {
+        printf("Maksimal antrean tercapai.\n");
+        return;
+    }
+
+    queues[*queue_count] = (Queue *)malloc(sizeof(Queue));
+    if (queues[*queue_count] != NULL) {
+        queues[*queue_count]->head = NULL;
+        queues[*queue_count]->tail = NULL;
+        queues[*queue_count]->count = 0;
+        printf("Antrean %d berhasil dibuat.\n", *queue_count);
+        (*queue_count)++;
+    } else {
+        printf("Gagal membuat antrean baru.\n");
+    }
+}
+
+//========================================================
+
+void delete_queue(Queue **queues, int *queue_count) {
+    int index;
+    printf("Pilih antrean yang akan dihapus (0-%d): ", *queue_count - 1);
+    fflush(stdin);
+    scanf("%d", &index);
+
+    if (index < 0 || index >= *queue_count || queues[index] == NULL) {
+        printf("Antrean tidak valid.\n");
+        return;
+    }
+
+    while (queues[index]->head != NULL)
+        mengurangi(queues[index]);
+    free(queues[index]);
+    queues[index] = NULL;
+    printf("Antrean %d berhasil dihapus.\n", index);
+}
+
+//========================================================
+
+void count_data(Queue *queue) {
+    printf("Jumlah data dalam antrean: %d\n", queue->count);
 }
