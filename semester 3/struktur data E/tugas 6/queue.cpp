@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <conio.h>
 #include <stdlib.h>
 
 struct node {
@@ -111,6 +110,7 @@ void transverse(node *head){
   }
   printf("NULL\n");
 }
+
 
 
 
