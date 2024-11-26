@@ -18,9 +18,9 @@ typedef struct {
 void nambah(Queue *queue);
 void mengurangi(Queue *queue);
 void print_all(Queue *queue);
-void create_new_queue(Queue **queues, int *queue_count);
+void buat_queue_baru(Queue **queues, int *queue_count);
 void delete_queue(Queue **queues, int *queue_count);
-void count_data(Queue *queue);
+void buat_queue_baru(Queue *queue);
 
 //========================================================
 
@@ -29,7 +29,7 @@ void count_data(Queue *queue);
 int main()
 {
     Queue *queues[10] = { NULL }; // Supports up to 10 queues
-    int queue_count = 0, active_queue = -1;
+    int queue_count = 1, active_queue = -1;
     char pilih;
 
     do {
@@ -37,17 +37,17 @@ int main()
         printf("1. Buat queue baru\n");
         printf("2. Hapus queue\n");
         printf("3. Pilih queue aktif\n");
-        printf("4. Tambahkan nomor (ke queue aktif)\n");
-        printf("5. Hapus nomor depan (dari queue aktif)\n");
+        printf("4. Tambahkan nomor\n");
+        printf("5. Hapus nomor depan\n");
         printf("6. Cetak isi queue aktif\n");
-        printf("7. Hitung jumlah data di queue aktif\n");
+        printf("7. Hitung jumlah data di queue yang telah dipilih\n");
         printf("MASUKKAN PILIHAN (tekan q untuk keluar) : ");
         fflush(stdin);
         scanf(" %c", &pilih);
 
         switch (pilih) {
         case '1':
-            create_new_queue(queues, &queue_count);
+            buat_queue_baru(queues, &queue_count);
             break;
         case '2':
             delete_queue(queues, &queue_count);
@@ -81,7 +81,7 @@ int main()
             break;
         case '7':
             if (active_queue != -1)
-                count_data(queues[active_queue]);
+                buat_queue_baru(queues[active_queue]);
             else
                 printf("Tidak ada queue aktif. Buat atau pilih queue dahulu.\n");
             break;
@@ -171,7 +171,7 @@ void print_all(Queue *queue) {
 
 //========================================================
 
-void create_new_queue(Queue **queues, int *queue_count) {
+void buat_queue_baru(Queue **queues, int *queue_count) {
     if (*queue_count >= 10) {
         printf("Maksimal queue tercapai.\n");
         return;
@@ -211,6 +211,6 @@ void delete_queue(Queue **queues, int *queue_count) {
 
 //========================================================
 
-void count_data(Queue *queue) {
+void buat_queue_baru(Queue *queue) {
     printf("Jumlah data dalam queue: %d\n", queue->count);
 }
