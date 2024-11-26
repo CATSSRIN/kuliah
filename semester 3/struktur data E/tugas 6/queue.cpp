@@ -101,6 +101,16 @@ void tambahdata(node **head){
   }
 }
 
+void transverse(node *head){
+  node *pWalker;
+
+  pWalker = head;
+  while (pWalker != NULL) {
+    printf("%d -> ", pWalker->data);
+    pWalker = pWalker->next;
+  }
+  printf("NULL\n");
+}
 
 
 
