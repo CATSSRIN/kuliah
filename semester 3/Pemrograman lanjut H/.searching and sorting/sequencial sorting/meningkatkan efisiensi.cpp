@@ -25,3 +25,4 @@ void main() {
     else
         printf("Data tidak ditemukan");
 }
+// original code from teacher
