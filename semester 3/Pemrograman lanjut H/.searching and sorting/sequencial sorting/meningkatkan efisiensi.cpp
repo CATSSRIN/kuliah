@@ -1,28 +1,30 @@
-#include <conio.h>
-#include <stdlib.h>
 
-void main() {
-    clrscr();
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+
+int main() {
+    system("cls");
     int data[100];
-    int cari=20;
-    int counter=0;
-    int flag=0;
-    randomize();
-    printf (int i=0; i<100; i++) {
-        data[i]=random(100);
-        printf ("%d ", data[i]);
+    int cari = 20;
+    int counter = 0;
+    srand(time(0));
+    for (int i = 0; i < 100; i++) {
+        data[i] = rand() % 100;
+        std::cout << data[i] << " ";
     }
+    std::cout << "\ndone. \n";
     printf("\ndone. \n");
 
-    for (int i=0; i<100; i++) {
-        if (data[i]==cari) {
-            flag=1;
+    for (int i = 0; i < 100; i++) {
+        if (data[i] == cari) {
             counter++;
         }
     }
-    if (flag==1)
-        printf("Data ditemukan sebanyak: %d\n", counter);
-    else
+    std::cout << "Data ditemukan sebanyak: " << counter << "\n";
+    printf("Data ditemukan sebanyak: %d\n", counter);
+    if (counter == 0) {
+        std::cout << "Data tidak ditemukan";
         printf("Data tidak ditemukan");
+    }
 }
-// original code from teacher
