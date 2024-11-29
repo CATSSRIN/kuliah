@@ -1,8 +1,6 @@
 #include <stdio.h>
-#include <conio.h>
 
-void main() {
-    clrscr();
+int main() {
     int data [8] = {8,10,6,-2,11,7,1,100};
     int cari;
     int flag=0;
@@ -16,4 +14,5 @@ void main() {
         printf("Data ditemukan");
     else
         printf("Data tidak ditemukan");
+    return 0;
 }
