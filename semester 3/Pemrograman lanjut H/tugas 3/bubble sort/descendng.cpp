@@ -8,14 +8,13 @@ struct Mahasiswa {
     float ipk;
 };
 
-// Fungsi untuk menukar dua data mahasiswa
+
 void tukar(Mahasiswa* a, Mahasiswa* b) {
     Mahasiswa temp = *a;
     *a = *b;
     *b = temp;
 }
 
-// Fungsi untuk mencetak data mahasiswa
 void tampilkanData(Mahasiswa mhs[], int n) {
     printf("%-10s %-20s %-15s %-5s\n", "NPM", "Nama", "Prodi", "IPK");
     printf("----------------------------------------------\n");
@@ -25,7 +24,6 @@ void tampilkanData(Mahasiswa mhs[], int n) {
     printf("\n");
 }
 
-// Fungsi untuk melakukan pengurutan data mahasiswa berdasarkan NPM secara menurun
 void bubbleSort(Mahasiswa mhs[], int n) {
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
