@@ -18,4 +18,9 @@ int jumpsearch(int arr[], int x, int n)
             if (prev == min(step, n))
                 return -1;
         }
+
+        if (arr[prev] == x)
+            return prev;
+
+        return -1;
 }
