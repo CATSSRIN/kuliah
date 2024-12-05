@@ -3,6 +3,7 @@
 int jumpsearch(int arr[], int x, int n)
 {
         int step = sqrt(n);
+        
         int prev = 0;
         while (arr[min(step, n) - 1] < x)
         {
