@@ -4,7 +4,7 @@
 #include <math.h>
 
 void main(){
-    clrscr ();
+    system("cls");
     int data[9] = {3, 9, 11, 12, 15, 17, 23, 31, 35};
     int low, high;
     int flag=0, d=36;
