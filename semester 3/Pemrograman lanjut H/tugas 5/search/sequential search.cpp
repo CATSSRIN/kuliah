@@ -2,7 +2,7 @@
 #include <conio.h>
 
 void main () {
-    clrscr();
+    system("cls");
     int data[8] = {8, 10, 6, -2, 11, 7, 1, 100};
     int cari;
     int flag = 0;
