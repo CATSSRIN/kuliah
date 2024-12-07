@@ -15,7 +15,7 @@ I_trapesium = (b - a) * (f(a) + f(b)) / 2;
 % hitung kesalahan relatif terhadap nilai eksak
 error_rel = (I_analitis - I_trapesium) / I_analitis * 100;
 
-% tampikan hasil
+% tampilkan hasil
 fprintf('Nilai eksak integral: %.6f\n', I_analitis);
 fprintf('Hasil integral dengan metode trapesium: %.6f\n', I_trapesium);
 fprintf('Kesalahan relatif: %.2f%%\n', error_rel);
