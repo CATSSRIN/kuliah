@@ -2,7 +2,7 @@
 #include <conio.h>
 
 void main() {
-    clrscr();
+    system("cls");
     int data[7] = {3, 12, 9, -4, 21, 6};
     int cari, i;
     printf("Masukkan data yang dicari: ");
