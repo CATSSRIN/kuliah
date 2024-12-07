@@ -6,7 +6,7 @@ b = 4; % batas atas
 % definisikan fungsi f(x) = exp(x)
 f = @(x) exp(x);
 
-% hitung nilai eksak lintegral secara analitis
+% hitung nilai eksak integral secara analitis
 I_analitis = exp(b) - exp(a);
 
 % hitung dengan metode trapezium satu pias
