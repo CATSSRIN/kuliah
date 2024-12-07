@@ -9,7 +9,7 @@ void main() {
     printf("Masukkan data yang dicari: ");
         scanf("%d", &cari);
     data[6] = cari;
-    i=o;
+    i=0;
     while (data[i] != cari)
         i++;
     if (i < 6)
