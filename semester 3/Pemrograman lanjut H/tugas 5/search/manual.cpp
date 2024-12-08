@@ -3,4 +3,4 @@
 #include <stdlib.h>
 #include <math.h>
 
-int binarysearch
+int binarysearch();
