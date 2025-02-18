@@ -4,8 +4,11 @@ using namespace std;
 
 class cls{
     private:
-        string nama; 
+        
+
     protected:
+        string nama;
+
     public:
         string getNama(){
             return this->nama;
