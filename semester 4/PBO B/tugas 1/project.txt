@@ -8,4 +8,4 @@ contoh :
 
 class, object, destructor, constructor
 
-animasi memakai clear screen dan 
+animasi memakai clear screen, printf, scanf
