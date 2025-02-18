@@ -26,5 +26,7 @@ class segitiga{
 };
 
 int main(){
-
+    segitiga s;
+    s.input(5, 10);
+    cout<<"luas segitiga = "<<s.luas()<<endl;
 }
