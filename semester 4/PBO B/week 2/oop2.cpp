@@ -30,3 +30,4 @@ int main(){
     s.input(5, 10);
     cout<<"luas segitiga = "<<s.luas()<<endl;
 }
+
