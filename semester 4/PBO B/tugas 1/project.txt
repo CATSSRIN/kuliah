@@ -1,9 +1,9 @@
 buat game dengan minimal 3 objek 
 contoh :  
 - tetris
-- flappy bird
-- snake
-- pong
+- flappy bird (burung, pipa, awan)
+- snake (ular, apel, bom)
+- pong (user, point, bola)
 - dll
 
 class, object, destructor, constructor
