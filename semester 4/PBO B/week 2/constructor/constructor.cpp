@@ -25,6 +25,11 @@ int main(){
     std::cout << student1.age << '\n';
     std::cout << student1.gpa << '\n';
     printf("\n");
+    //or
+    // printf("student name: %s\n", student1.name.c_str());
+    // printf("student age: %d\n", student1.age);
+    // printf("student gpa: %f\n", student1.gpa);
+    // printf("\n");
 
     std::cout << student2.name << '\n';
     std::cout << student2.age << '\n';
@@ -35,6 +40,6 @@ int main(){
     std::cout << student3.age << '\n';
     std::cout << student3.gpa << '\n';
     printf("\n");
-
+    
     return 0;
 };
