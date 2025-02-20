@@ -32,7 +32,7 @@ int main() {
     printf("\n");
     printf(car2.model.c_str());
     printf("\n");
-    printf("%d\n", car2.year);
+    printf("%d\n", car2.year); //or this works too
     printf(car2.color.c_str());
     printf("\n");
 
