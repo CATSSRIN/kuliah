@@ -20,11 +20,12 @@ class number{
         }
 
 
+        };
+        
         int main(){
             number seven(7);
             number five(5);
             number six(6);
-
+        
             return 0;
-        }
-};
+        };
