@@ -20,6 +20,8 @@ int main(){
     student student1("spongebob", 25, 3.2);
 
     std::cout << student1.name << '\n';
+    std::cout << student1.age << '\n';
+    std::cout << student1.gpa << '\n';
 
     return 0;
 }
