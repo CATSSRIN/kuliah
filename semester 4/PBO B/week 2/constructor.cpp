@@ -24,15 +24,4 @@ int main(){
     std::cout << student1.gpa << '\n';
 
     return 0;
-}
-
-
-
-int main(){
-
-    student student1("spongebob", 25, 3.2);
-
-    std::cout << student1.name << '\n';
-
-    return 0;
-}
+};
