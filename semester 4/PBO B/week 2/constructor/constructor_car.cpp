@@ -18,6 +18,11 @@ class car{
 
 int main() {
 
+    car car1("Toyota", "Avanza", 2019, "Black");
 
+    std::cout << car1.make << '\n';
+    std::cout << car1.model << '\n';
+    std::cout << car1.year << '\n';
+    std::cout << car1.color << '\n';
 
 };
