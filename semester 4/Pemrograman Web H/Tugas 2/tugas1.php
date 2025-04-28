@@ -1,5 +1,21 @@
 <?php
 
+echo '<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Display</title>
+    <style>
+        body {
+            background-color: #2c2c2c;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>';
+
 class Product {
     protected $name;
     protected $price;
@@ -96,9 +112,20 @@ class CDCabinet extends Product {
 // Simulation
 
 $cd = new CDMusic("Greatest Hits", 20, 0.2, "Artist 1", "Pop");
-echo "CD: " . $cd->getName() . ", Price: " . $cd->getPrice() . ", Discount: " . $cd->getDiscount() . ", Artist: " . $cd->getArtist() . ", Genre: " . $cd->getGenre() . "<br>";
+echo "CD: <br>\n";
+echo "Name: " . $cd->getName() . "<br>\n";
+echo "Price: " . $cd->getPrice() . "<br>\n";
+echo "Discount: " . $cd->getDiscount() . "<br>\n";
+echo "Artist: " . $cd->getArtist() . "<br>\n";
+echo "Genre: " . $cd->getGenre() . "<br>\n";
+echo " " . "<br>\n";
 
 $cabinet = new CDCabinet("Storage Unit", 100, 0.1, 500, "Deluxe");
-echo "Cabinet: " . $cabinet->getName() . ", Price: " . $cabinet->getPrice() . ", Discount: " . $cabinet->getDiscount() . ", Capacity: " . $cabinet->getCapacity() . ", Model: " . $cabinet->getModel() . "<br>";
+echo "Cabinet: <br>\n";
+echo "Name: " . $cabinet->getName() . "<br>\n";
+echo "Price: " . $cabinet->getPrice() . "<br>\n";
+echo "Discount: " . $cabinet->getDiscount() . "<br>\n";
+echo "Capacity: " . $cabinet->getCapacity() . "<br>\n";
+echo "Model: " . $cabinet->getModel() . "<br>\n";
 
 ?>
