@@ -60,7 +60,7 @@ class CDMusic extends Product {
         parent::__construct($name, $price, $discount);
         $this->artist = $artist;
         $this->genre = $genre;
-        $this->price *= 1.10; // Price + 10%
+        $this->price *= 1.10; // harga (100%) + 10%
         $this->discount += 0.05; // Discount + 5%
     }
 
@@ -89,7 +89,7 @@ class CDCabinet extends Product {
         parent::__construct($name, $price, $discount);
         $this->capacity = $capacity;
         $this->model = $model;
-        $this->price *= 1.15; // Price + 15%
+        $this->price *= 1.15; // harga (100%) + 15%
     }
 
     public function getCapacity() {
@@ -109,7 +109,7 @@ class CDCabinet extends Product {
     }
 }
 
-// Simulation
+// Simulasi
 
 $cd = new CDMusic("Greatest Hits", 20, 0.2, "Artist 1", "Pop");
 echo "CD: <br>\n";
