@@ -1,1 +1,3 @@
 parameter double
+
+persimpanan parameter
