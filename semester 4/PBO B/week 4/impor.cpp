@@ -17,3 +17,22 @@ void hitung Pajak(int gaji, int honor, int bonus){
         cout << "Total Pajak Setahun: " << pajakPPh <<"\n";
     }
 }
+
+void hitungPajakTanah (int NJOP){
+    int NJKP=0;
+    int pajakTanah=0;
+
+    if (NJOP >= 1000000000){
+        NJKP = 1000000000;
+    }
+    else if (NJOP >= 500000000 && NJOP < 1000000000) {
+        NJKP = 0.4*NJOP;
+    }
+    else {
+        NJKP = 0.2*NJOP;
+    }
+
+    pajakTanah = 0.5*NJKP / 100;
+    cout << "Total Pajak PBB = " << pajakTanah << "\n";
+
+}
