@@ -1,0 +1,9 @@
+ganti dulu file directory 
+
+image_files = [
+    r'D:\Github\kuliah\semester 5\Informatika medis A\tugas 1\foto\medis1.png',
+    r'D:\Github\kuliah\semester 5\Informatika medis A\tugas 1\foto\medis2.png',
+    r'D:\Github\kuliah\semester 5\Informatika medis A\tugas 1\foto\medis3.png',
+    r'D:\Github\kuliah\semester 5\Informatika medis A\tugas 1\foto\medis4.png',
+    r'D:\Github\kuliah\semester 5\Informatika medis A\tugas 1\foto\medis5.png'
+]

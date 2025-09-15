@@ -1,2 +1,2 @@
-import cv2
-print(cv2.__version__)
+import matplotlib as plt
+print(plt.__version__)

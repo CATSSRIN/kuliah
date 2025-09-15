@@ -3,6 +3,10 @@ import numpy as np
 
 img = cv2.imread('xray.png', 0)
 
+if img is None:
+    print("Error: Could not read the image.")
+    exit()
+
 # Histogram equalization
 he = cv2.equalizeHist(img)
 
