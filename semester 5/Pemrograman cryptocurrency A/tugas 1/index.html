@@ -1,0 +1,160 @@
+<html>
+ <head>
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="icon" sizes="16x16 32x32 64x64" href="img/favicon.ico">
+  <link rel="icon" type="image/png" sizes="196x196" href="img/favicon-192.png">
+  <link rel="icon" type="image/png" sizes="160x160" href="img/favicon-160.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="img/favicon-96.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="img/favicon-64.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
+  <link rel="apple-touch-icon" href="img/favicon-57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="img/favicon-114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="img/favicon-72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="img/favicon-144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="img/favicon-60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="img/favicon-120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="img/favicon-76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="img/favicon-152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/favicon-180.png">
+  <meta name="msapplication-TileColor" content="#FFFFFF">
+  <meta name="msapplication-TileImage" content="img/favicon-144.png">
+  <meta name="msapplication-config" content="/browserconfig.xml">
+
+  <link rel="stylesheet" href="css/styles.css?v=1.0">
+  <link rel="stylesheet" type="text/css" href="css/style.css"/>
+
+  <title>BTC/USD with CMO Status</title>
+  <style>
+   body { font-family: sans-serif; text-align: center; padding: 20px; }
+   #status-container { margin: 20px auto; padding: 15px; border: 1px solid #ccc; border-radius: 8px; max-width: 400px; }
+   /* --- PERUBAHAN DI SINI --- */
+   #statusImage { 
+    max-width: 250px; /* Ukuran gambar diperkecil */
+    height: auto; 
+    border-radius: 5px; 
+    display: block;
+    margin: 10px auto; /* Membuat gambar tetap di tengah */
+   }
+   h2 { margin-top: 0; }
+   #cmoValue { font-size: 1.2em; font-weight: bold; margin-top: 10px; }
+   .tradingview-widget-container { height: 600px; margin-top: 30px;}
+  </style>
+ </head>
+
+ <body>
+  
+  <div id="status-container">
+    <h2>Sinyal Berdasarkan CMO</h2>
+    <img id="statusImage" src="foto2.jpg" alt="Status Sinyal">
+    <p id="cmoValue">Memuat data...</p>
+  </div>
+
+  <div class="tradingview-widget-container">
+   <div id="tradingview_417af"></div>
+   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+   <script type="text/javascript">
+    new TradingView.widget({
+     "autosize": true,
+     "symbol": "BINANCE:BTCUSDT",
+     "interval": "W",
+     "timezone": "Europe/Zurich",
+     "theme": "Light",
+     "style": "1",
+     "locale": "en",
+     "toolbar_bg": "#f1f3f6",
+     "enable_publishing": false,
+     "withdateranges": true,
+     "hide_side_toolbar": false,
+     "allow_symbol_change": true,
+     "details": false,
+     /* --- PERUBAHAN DI SINI --- */
+     "studies": [
+      "IchimokuCloud@tv-basicstudies", // DITAMBAHKAN
+      "RSI@tv-basicstudies", // SUDAH ADA SEBELUMNYA
+      "ChandeMomentumOscillator@tv-basicstudies",
+      "StochasticRSI@tv-basicstudies",
+      "MACD@tv-basicstudies",
+      "Volume@tv-basicstudies"
+     ],
+     "container_id": "tradingview_417af"
+    });
+   </script>
+  </div>
+
+  <script>
+    // --- PENGATURAN YANG BISA ANDA UBAH ---
+    const CMO_PERIOD = 14; 
+    const BUY_LEVEL = -50; 
+    const RISKY_LEVEL = 50; 
+    const UPDATE_INTERVAL_MS = 60000; 
+
+    const statusImage = document.getElementById('statusImage');
+    const cmoValueElement = document.getElementById('cmoValue');
+
+    function calculateCMO(closePrices, period) {
+      if (closePrices.length <= period) {
+        return null; 
+      }
+      
+      let sumUp = 0;
+      let sumDown = 0;
+      
+      const relevantPrices = closePrices.slice(-(period + 1));
+
+      for (let i = 1; i < relevantPrices.length; i++) {
+        const diff = relevantPrices[i] - relevantPrices[i - 1];
+        if (diff > 0) {
+          sumUp += diff;
+        } else {
+          sumDown += Math.abs(diff);
+        }
+      }
+
+      if (sumUp + sumDown === 0) {
+        return 0;
+      }
+
+      const cmo = 100 * (sumUp - sumDown) / (sumUp + sumDown);
+      return cmo;
+    }
+
+    async function updateStatus() {
+      try {
+        const response = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=50');
+        if (!response.ok) {
+            throw new Error('Gagal mengambil data dari API Binance');
+        }
+        const data = await response.json();
+        const closePrices = data.map(candle => parseFloat(candle[4]));
+        const cmo = calculateCMO(closePrices, CMO_PERIOD);
+
+        if (cmo !== null) {
+          cmoValueElement.textContent = `Nilai CMO Saat Ini: ${cmo.toFixed(2)}`;
+
+          if (cmo < BUY_LEVEL) {
+            statusImage.src = 'media/foto1.png';
+            statusImage.alt = 'Sinyal Beli';
+          } else if (cmo > RISKY_LEVEL) {
+            statusImage.src = 'media/foto3.png';
+            statusImage.alt = 'Sinyal Risky';
+          } else {
+            statusImage.src = 'media/foto2.png';
+            statusImage.alt = 'Sinyal Biasa / Netral';
+          }
+        } else {
+            cmoValueElement.textContent = "Data tidak cukup untuk perhitungan.";
+        }
+
+      } catch (error) {
+        console.error("Terjadi kesalahan:", error);
+        cmoValueElement.textContent = "Gagal memuat data CMO.";
+      }
+    }
+
+    updateStatus();
+    setInterval(updateStatus, UPDATE_INTERVAL_MS);
+  </script>
+
+ </body>
+</html>
