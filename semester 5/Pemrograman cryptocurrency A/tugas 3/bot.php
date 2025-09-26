@@ -1,7 +1,7 @@
 <?php
 
 // 1. GANTI DENGAN TOKEN BOT ANDA
-$token = "8327944500:AAHwwTH1x3mxcrSItv4dQVLcEQ7oVkEWrg4";
+$token = "8327944500:AAHwwTH1x3mxcrSItv4dQVLcEQ7oVkEWrg4"; //no longer in use
 $apiUrl = "https://api.telegram.org/bot" . $token;
 
 // 2. AMBIL UPDATE DARI TELEGRAM
