@@ -1,0 +1,6 @@
+Title: OpenGL Example Program (Loading TGA Files)
+Description: OpenGL in Visual Basic is a largely unexplored area. I did a search on PSC for OpenGL and came up with a mere handful of results. Some of the submissions were quite good, however I felt that they were a little too complex for the beginner in OpenGL. This submission is an altered version of a port to VB from C++ (Original tutorial + VB port available on http://nehe.gamedev.net). This demo initializes OpenGL in fullscreen mode and displays a mipmapped textured cube which you can rotate. The main feature I'm trying to demonstrate here is loading a TGA file from disk and using it as an OpenGL texture. You will need hardware acceleration of some form to view this demo at any form of acceptable frame rate, but I consider this an acceptable requirement.
+This file came from Planet-Source-Code.com...the home millions of lines of source code
+You can view comments on this code/and or vote on it at: http://www.Planet-Source-Code.com/vb/scripts/ShowCode.asp?txtCodeId=21424&lngWId=1
+
+The author may have retained certain copyrights to this code...please observe their request and the law by reviewing all copyright conditions at the above URL.
