@@ -1,0 +1,96 @@
+/* Custom Styles for Crypto Exchange Aggregator */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.category-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    cursor: pointer;
+}
+
+.category-card:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.table-responsive {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.badge {
+    padding: 0.5em 0.75em;
+}
+
+footer {
+    margin-top: auto;
+}
+
+/* Status Colors */
+.status-active {
+    color: #28a745;
+}
+
+.status-maintenance {
+    color: #ffc107;
+}
+
+.status-inactive {
+    color: #dc3545;
+}
+
+/* Loading Spinner */
+.spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Price Change Colors */
+.price-up {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.price-down {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}

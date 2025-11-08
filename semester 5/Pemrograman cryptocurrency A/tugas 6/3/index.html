@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vindax Ticker Data</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Vindax 24hr Ticker Data</h1>
+    <button onclick="fetchData()">Refresh Data</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Price Change</th>
+                <th>Last Price</th>
+            </tr>
+        </thead>
+        <tbody id="ticker-data"></tbody>
+    </table>
+
+    <script>
+        async function fetchData() {
+            const response = await fetch('/data');
+            const data = await response.json();
+            const tableBody = document.getElementById('ticker-data');
+
+            tableBody.innerHTML = ''; // Clear existing data
+
+            data.forEach(item => {
+                const row = `<tr>
+                    <td>${item.symbol}</td>
+                    <td>${item.priceChange}</td>
+                    <td>${item.lastPrice}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        // Fetch data on page load
+        fetchData();
+    </script>
+</body>
+</html>
