@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BarangController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +16,3 @@ use App\Http\Controllers\BarangController;
 Route::get('/', function () {
     return view('welcome');
 });
-
-// Barang CRUD Routes
-Route::resource('barang', BarangController::class);
