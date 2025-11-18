@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Cohen's Kappa</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        h1, h2 {
+            color: #005a9c;
+            border-bottom: 2px solid #005a9c;
+            padding-bottom: 5px;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #e9f2f9;
+        }
+        td input[type="number"] {
+            width: 90%;
+            padding: 8px;
+            font-size: 1em;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-align: center;
+        }
+        #result.success {
+            background-color: #e6f7ec;
+            color: #006421;
+            border: 1px solid #c3e6cb;
+        }
+        #result.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .label {
+            font-weight: bold;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Kalkulator Cohen's Kappa (K)</h1>
+        <p>Masukkan jumlah observasi ke dalam tabel kontingensi 2x2 (tabulasi silang) di bawah ini.</p>
+
+        <h2>Input Data (Tabulasi Silang)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2" colspan="2"></th>
+                    <th colspan="2">Penilai 2 (Rater 2)</th>
+                </tr>
+                <tr>
+                    <th>Kategori 0 (Tidak Setuju)</th>
+                    <th>Kategori 1 (Setuju)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th rowspan="2">Penilai 1<br>(Rater 1)</th>
+                    <td class="label">Kategori 0 (Tidak Setuju)</td>
+                    <td><input type="number" id="a" value="5" placeholder="a"></td>
+                    <td><input type="number" id="b" value="2" placeholder="b"></td>
+                </tr>
+                <tr>
+                    <td class="label">Kategori 1 (Setuju)</td>
+                    <td><input type="number" id="c" value="0" placeholder="c"></td>
+                    <td><input type="number" id="d" value="23" placeholder="d"></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="controls">
+            <button onclick="calculateKappa()">Hitung Nilai Kappa</button>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function calculateKappa() {
+            const a = parseInt(document.getElementById('a').value) || 0;
+            const b = parseInt(document.getElementById('b').value) || 0;
+            const c = parseInt(document.getElementById('c').value) || 0;
+            const d = parseInt(document.getElementById('d').value) || 0;
+
+            const N = a + b + c + d;
+            if (N === 0) {
+                setResult("Total data (N) tidak boleh nol.", "error");
+                return;
+            }
+
+            // 1. Menghitung Proporsi Observasi (Observed Agreement - Po)
+            // Ini adalah jumlah data yang disetujui kedua penilai (a + d) dibagi total data.
+            const po = (a + d) / N;
+
+            // 2. Menghitung Proporsi Harapan (Expected Agreement - Pe)
+            // Ini adalah probabilitas kesepakatan yang terjadi secara kebetulan.
+            const row1_total = a + b;
+            const row2_total = c + d;
+            const col1_total = a + c;
+            const col2_total = b + d;
+
+            const p_row1 = row1_total / N;
+            const p_row2 = row2_total / N;
+            const p_col1 = col1_total / N;
+            const p_col2 = col2_total / N;
+
+            // P(e) = P(keduanya setuju 'Kategori 0') + P(keduanya setuju 'Kategori 1')
+            const pe = (p_row1 * p_col1) + (p_row2 * p_col2);
+
+            // 3. Menghitung Kappa (K)
+            // K = (Po - Pe) / (1 - Pe)
+            const kappa = (po - pe) / (1 - pe);
+
+            if (isNaN(kappa)) {
+                setResult("Tidak dapat menghitung Kappa. Pastikan input valid.", "error");
+                return;
+            }
+
+            // Menentukan interpretasi berdasarkan Tabel 3 di jurnal
+            let interpretation = "";
+            if (kappa < 0.20) interpretation = "Rendah (poor)";
+            else if (kappa <= 0.40) interpretation = "Lumayan (fair)";
+            else if (kappa <= 0.60) interpretation = "Cukup (moderate)";
+            else if (kappa <= 0.80) interpretation = "Kuat (good)";
+            else interpretation = "Sangat Kuat (very good)";
+
+            // Menampilkan hasil
+            const resultText = `
+                <b>Nilai Kappa (K) = ${kappa.toFixed(3)}</b><br>
+                Interpretasi: ${interpretation}
+                <hr style="border:0; border-top:1px solid #ddd; margin: 10px 0;">
+                <b>Total Data (N):</b> ${N}<br>
+                <b>Observed Agreement (Po):</b> ${po.toFixed(3)}<br>
+                <b>Expected Agreement (Pe):</b> ${pe.toFixed(3)}
+            `;
+            setResult(resultText, "success");
+        }
+
+        function setResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = message;
+            resultDiv.className = type;
+        }
+
+        // Jalankan perhitungan awal dengan data contoh dari jurnal
+        window.onload = calculateKappa;
+    </script>
+
+</body>
+</html>
