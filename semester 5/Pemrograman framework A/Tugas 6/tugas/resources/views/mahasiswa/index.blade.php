@@ -3,7 +3,9 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h3>Daftar Mahasiswa</h3>
+    @if(Auth::user()->isAdmin())
     <a href="{{ route('mahasiswa.create') }}" class="btn btn-primary">+ Tambah Mahasiswa</a>
+    @endif
 </div>
 
 <table class="table table-bordered table-striped">
@@ -32,12 +34,15 @@
             <td>{{ $mhs->nama }}</td>
             <td>{{ $mhs->email }}</td>
             <td>
+                <a href="{{ route('mahasiswa.show', $mhs->id) }}" class="btn btn-sm btn-info">Detail</a>
+                @if(Auth::user()->isAdmin())
                 <a href="{{ route('mahasiswa.edit', $mhs->id) }}" class="btn btn-sm btn-warning">Edit</a>
                 <form action="{{ route('mahasiswa.destroy', $mhs->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                     @csrf
                     @method('DELETE')
                     <button class="btn btn-sm btn-danger">Hapus</button>
                 </form>
+                @endif
             </td>
         </tr>
         @empty
