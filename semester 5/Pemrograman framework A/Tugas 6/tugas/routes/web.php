@@ -1,9 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\ProyekController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,11 +21,33 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Routing untuk CRUD Mahasiswa
-Route::resource('mahasiswa', MahasiswaController::class);
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
-// Routing untuk CRUD Dosen
-Route::resource('dosen', DosenController::class);
+// Admin only routes for Mahasiswa CRUD operations (must come first to avoid route conflicts)
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/mahasiswa/create', [MahasiswaController::class, 'create'])->name('mahasiswa.create');
+    Route::post('/mahasiswa', [MahasiswaController::class, 'store'])->name('mahasiswa.store');
+    Route::get('/mahasiswa/{mahasiswa}/edit', [MahasiswaController::class, 'edit'])->name('mahasiswa.edit');
+    Route::put('/mahasiswa/{mahasiswa}', [MahasiswaController::class, 'update'])->name('mahasiswa.update');
+    Route::delete('/mahasiswa/{mahasiswa}', [MahasiswaController::class, 'destroy'])->name('mahasiswa.destroy');
+});
 
-// Routing untuk CRUD Proyek
-Route::resource('proyek', ProyekController::class);
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Mahasiswa routes - Read only for authenticated users
+    Route::get('/mahasiswa', [MahasiswaController::class, 'index'])->name('mahasiswa.index');
+    Route::get('/mahasiswa/{mahasiswa}', [MahasiswaController::class, 'show'])->name('mahasiswa.show');
+    
+    // Dosen routes
+    Route::resource('dosen', DosenController::class);
+    
+    // Proyek routes
+    Route::resource('proyek', ProyekController::class);
+});
+
+require __DIR__.'/auth.php';
