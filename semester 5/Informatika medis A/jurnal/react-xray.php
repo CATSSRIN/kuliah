@@ -1,17 +1,16 @@
 <?php
 // ==========================================
-// BAGIAN LOGIKA (BACKEND)
+// BAGIAN LOGIKA (BACKEND) - TETAP SAMA
 // ==========================================
-ini_set('memory_limit', '512M'); // Memori diperbesar untuk proses "Area"
-ini_set('max_execution_time', 300); // Waktu proses diperlama
+ini_set('memory_limit', '512M');
+ini_set('max_execution_time', 300);
 
 $pesan = "";
 $file_terupload = "";
 $file_hasil = "";
 
-// Fungsi PHP Murni: Unsharp Masking untuk simulasi CLAHE
+// Fungsi PHP Murni: Unsharp Masking
 function process_xray_advanced($source_path, $output_path, $amount, $radius) {
-    // 1. Load Gambar
     $info = getimagesize($source_path);
     $mime = $info['mime'];
 
@@ -23,75 +22,46 @@ function process_xray_advanced($source_path, $output_path, $amount, $radius) {
 
     if (!$img) return false;
 
-    // 2. Ubah ke Grayscale
     imagefilter($img, IMG_FILTER_GRAYSCALE);
-    
-    // 3. AUTO LEVEL (Histogram Equalization Dasar)
-    // Ini untuk memastikan kontras dasar sudah bagus sebelum ditajamkan
-    // (Disederhanakan menggunakan filter contrast bawaan PHP untuk performa)
-    imagefilter($img, IMG_FILTER_CONTRAST, -20); // Sedikit boost kontras dasar
+    imagefilter($img, IMG_FILTER_CONTRAST, -20);
 
-    // 4. LOGIKA "AREA" (Unsharp Masking)
-    // Kita membuat layer blur untuk mendeteksi area detail
-    
     $w = imagesx($img);
     $h = imagesy($img);
     
-    // Buat salinan gambar untuk diburamkan (Layer Blur)
     $imgBlur = imagecreatetruecolor($w, $h);
     imagecopy($imgBlur, $img, 0, 0, 0, 0, $w, $h);
 
-    // Terapkan Blur sesuai parameter "AREA" (Radius)
-    // Semakin besar Area, semakin banyak looping blur-nya
-    // Di PHP GD, Gaussian Blur radiusnya fix, jadi kita loop untuk memperbesar radius
     for ($i = 0; $i < $radius; $i++) {
         imagefilter($imgBlur, IMG_FILTER_GAUSSIAN_BLUR);
     }
 
-    // 5. PROSES PENGGABUNGAN (Subtract & Add)
-    // Rumus: Original + (Original - Blur) * Amount
-    
-    // Konversi Amount (0-100) menjadi faktor pengali (0.5 - 3.0)
     $factor = $amount / 20; 
 
     for ($y = 0; $y < $h; $y++) {
         for ($x = 0; $x < $w; $x++) {
-            // Ambil warna pixel asli
             $rgbOrig = imagecolorat($img, $x, $y);
             $grayOrig = ($rgbOrig >> 16) & 0xFF;
 
-            // Ambil warna pixel blur
             $rgbBlur = imagecolorat($imgBlur, $x, $y);
             $grayBlur = ($rgbBlur >> 16) & 0xFF;
 
-            // Hitung selisih (Detail frekuensi tinggi)
             $diff = $grayOrig - $grayBlur;
-
-            // Tambahkan selisih kembali ke gambar asli (Sharpening)
             $newVal = $grayOrig + ($diff * $factor);
-
-            // Clipping agar tidak tembus 0-255
             $newVal = max(0, min(255, $newVal));
 
-            // Set pixel baru
             $newColor = imagecolorallocate($img, $newVal, $newVal, $newVal);
             imagesetpixel($img, $x, $y, $newColor);
         }
     }
 
-    // Bersihkan memori
     imagedestroy($imgBlur);
-
-    // 6. Simpan Hasil
     imagejpeg($img, $output_path, 95);
     imagedestroy($img);
     return true;
 }
 
-
 // --- PROSES UPLOAD ---
 if (isset($_POST['submit'])) {
-    
     $target_dir = "uploads/";
     if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
 
@@ -99,11 +69,7 @@ if (isset($_POST['submit'])) {
     $target_file = $target_dir . "orig_" . time() . "_" . $nama_file;
     $output_file = $target_dir . "proc_" . time() . "_" . $nama_file;
     
-    // AMBIL DUA PARAMETER
-    // 1. Amount (Kekuatan Kontras/Clip Limit)
     $amount = isset($_POST['amount']) ? (int)$_POST['amount'] : 50;
-    
-    // 2. Radius (Area Jangkauan/Grid Size)
     $radius = isset($_POST['radius']) ? (int)$_POST['radius'] : 3;
 
     $tipe_file = strtolower(pathinfo($nama_file, PATHINFO_EXTENSION));
@@ -112,8 +78,6 @@ if (isset($_POST['submit'])) {
     if (!empty($_FILES["imageFile"]["name"]) && in_array($tipe_file, $ekstensi_ok)) {
         if (move_uploaded_file($_FILES["imageFile"]["tmp_name"], $target_file)) {
             $file_terupload = $target_file;
-
-            // Panggil fungsi baru
             $sukses = process_xray_advanced($target_file, $output_file, $amount, $radius);
 
             if ($sukses) {
@@ -134,10 +98,39 @@ if (isset($_POST['submit'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>X-Ray PHP Advanced</title>
+    <title>X-Ray PHP Advanced + Particles</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; }
-        .container { background: white; padding: 25px; border-radius: 10px; max-width: 850px; margin: auto; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        /* CSS UNTUK PARTICLES */
+        body { 
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif; 
+            overflow-x: hidden;
+            /* Warna Background Gelap agar particles terlihat */
+            background-color: #1b1b2f; 
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1; /* Taruh di belakang */
+        }
+
+        /* CSS KONTEN ASLI (Dimodifikasi sedikit agar terlihat di atas background) */
+        .container { 
+            background: rgba(255, 255, 255, 0.95); /* Sedikit transparan */
+            padding: 25px; 
+            border-radius: 10px; 
+            max-width: 850px; 
+            margin: 50px auto; /* Margin atas ditambah */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+            position: relative;
+            z-index: 1; /* Taruh di depan particles */
+        }
+
         h2 { text-align: center; color: #333; }
         .row { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
         .col { flex: 1; min-width: 300px; }
@@ -152,7 +145,9 @@ if (isset($_POST['submit'])) {
         button { background: #007bff; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px;}
         button:hover { background: #0056b3; }
         .sukses { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px; }
+        .gagal { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px; }
         img { max-width: 100%; border-radius: 5px; border: 1px solid #ccc; }
+
         /* Tombol Pojok Kanan Atas */
 .btn-static {
     position: fixed; /* Agar tetap di pojok meskipun di-scroll */
@@ -160,7 +155,7 @@ if (isset($_POST['submit'])) {
     right: 20px;
     z-index: 1000; /* Pastikan di atas layer particles & container */
     
-    background-color: #9B9D8E; /* Warna Pink (sesuai garis partikel) */
+    background-color: #FF69B4; /* Warna Pink (sesuai garis partikel) */
     color: white;
     padding: 10px 25px;
     border-radius: 50px; /* Membuat tombol bulat lonjong */
@@ -172,14 +167,16 @@ if (isset($_POST['submit'])) {
 }
 
 .btn-static:hover {
-    background-color: #ff85c1; /* Warna lebih terang saat hover */
+    background-color: #9B9D8E; /* Warna lebih terang saat hover */
     transform: translateY(-2px); /* Efek naik sedikit */
     box-shadow: 0 6px 20px rgba(255, 105, 180, 0.6);
 }
     </style>
 </head>
 <body>
-<a href="xray_particles.php" class="btn-static">React</a>
+<a href="index.php" class="btn-static">Static</a>
+<div id="particles-js"></div>
+
 <div class="container">
     <h2>X-Ray Processor (PHP Native)</h2>
     <?php echo $pesan; ?>
@@ -230,6 +227,91 @@ if (isset($_POST['submit'])) {
         </div>
     </form>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script>
+    particlesJS('particles-js', {
+      "particles": {
+        "number": {
+          "value": 80,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "color": {
+          "value": "#97F5C8"
+        },
+        "shape": {
+          "type": "circle"
+        },
+        "opacity": {
+          "value": 0.5,
+          "random": false
+        },
+        "size": {
+          "value": 2,
+          "random": true
+        },
+        "line_linked": {
+          "enable": true,
+          "distance": 150,
+          "color": "#FF69B4",
+          "opacity": 0.8,
+          "width": 1
+        },
+        "move": {
+          "enable": true,
+          "speed": 6,
+          "direction": "none",
+          "random": false,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": false
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": true,
+            "mode": "repulse"
+          },
+          "onclick": {
+            "enable": true,
+            "mode": "push"
+          },
+          "resize": true
+        },
+        "modes": {
+          "grab": {
+            "distance": 400,
+            "line_linked": {
+              "opacity": 1
+            }
+          },
+          "bubble": {
+            "distance": 400,
+            "size": 40,
+            "duration": 2,
+            "opacity": 8,
+            "speed": 3
+          },
+          "repulse": {
+            "distance": 200,
+            "duration": 0.4
+          },
+          "push": {
+            "particles_nb": 4
+          },
+          "remove": {
+            "particles_nb": 2
+          }
+        }
+      },
+      "retina_detect": true
+    });
+</script>
 
 </body>
 </html>
