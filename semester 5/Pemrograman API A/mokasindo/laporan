@@ -1,0 +1,43 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('vehicles', function (Blueprint $table) {
+            // Menambahkan kolom koordinat setelah deskripsi
+            // Decimal(10, 8) cukup untuk presisi hingga level milimeter
+            // Nullable: agar data lama yang belum punya lokasi tidak error
+            $table->decimal('latitude', 10, 8)->nullable()->after('description');
+            $table->decimal('longitude', 11, 8)->nullable()->after('latitude');
+            
+            // Compound Index: Index gabungan untuk mempercepat query spasial
+            $table->index(['latitude', 'longitude'], 'vehicles_geo_index');
+        });
+
+        // Update tabel user jika diperlukan (misal untuk lokasi pembeli)
+        Schema::table('users', function (Blueprint $table) {
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('vehicles', function (Blueprint $table) {
+            // Hapus index dulu sebelum drop kolom
+            $table->dropIndex('vehicles_geo_index');
+            $table->dropColumn(['latitude', 'longitude']);
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['latitude', 'longitude']);
+        });
+    }
+};
+
+
