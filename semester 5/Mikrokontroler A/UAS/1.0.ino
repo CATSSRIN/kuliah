@@ -1,7 +1,6 @@
 /*
-  GABUNGAN: MQTT Slider Control + PID Motor Speed
-  Merged by: Gemini
-  Sources: fix selesai no debat.ino & hpwork.ino
+  GABUNGAN FINAL: MQTT Slider + PID + RPM Reading
+  Fixed by: Gemini
 */
 
 #include <WiFi.h>
@@ -10,10 +9,13 @@
 // ==========================================
 // 1. KONFIGURASI WIFI & MQTT
 // ==========================================
-const char* ssid = "HOTSPOT@UPNJATIM.AC.ID"; // Sesuaikan jika perlu
-const char* password = "belanegara";
-const char* mqtt_server = "broker.hivemq.com";
-const char* mqtt_topic = "esp32/motor/control"; // Topic untuk slider
+// Menggunakan Hotspot HP (Pilihan tepat untuk menghindari login kampus yang ribet)
+const char* ssid = "Lapphone's S24 Ultra"; 
+const char* password = "caez0408";
+
+const char* mqtt_server = "broker.emqx.io";
+const char* mqtt_topic = "upn/caezar/motor/control";     // Topic Slider (HP -> ESP32)
+const char* mqtt_pub_topic = "upn/caezar/motor/rpm_reading"; // Topic RPM (ESP32 -> HP)
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -29,7 +31,7 @@ const byte pin_rpm = 13;
 // PWM Properties
 const int freq = 30000;
 const int pwmChannel = 0;
-const int resolution = 8;
+const int resolution = 8; // 8-bit artinya nilai PWM 0 - 255
 
 // ==========================================
 // 3. VARIABEL PID & RPM
@@ -43,20 +45,21 @@ float rpm_filtered = 0;
 
 // PID Variables
 float P, I, D;
-float Kc = 0.003;       // Proportional Gain (Sesuaikan tuning di sini)
-float tauI = 1;         // Integral Time
-float tauD = 1;         // Derivative Time
+// Tuning PID: Jika respons lambat, naikkan Kc. Jika bergetar, turunkan.
+float Kc = 0.007;       
+float tauI = 1;         
+float tauD = 1;         
 
-float sp = 0;           // SETPOINT (Target RPM) - Diubah via MQTT
-float pv = 0;           // Process Value (RPM saat ini)
+float sp = 0;           // SETPOINT (Target RPM dari MQTT)
+float pv = 0;           // PROCESS VALUE (RPM Asli dari Sensor)
 float pv_last = 0;
 float ierr = 0;
 float dt = 0;
-int op = 0;             // Output PWM
+int op = 0;             // Output PWM (0-255)
 
 unsigned long ts = 0, new_ts = 0;
 
-// Interrupt Service Routine untuk Encoder
+// Interrupt Service Routine
 void IRAM_ATTR isr() {
   rev++;
 }
@@ -66,7 +69,7 @@ void IRAM_ATTR isr() {
 // ==========================================
 void setup_wifi() {
   delay(10);
-  Serial.print("Connecting to ");
+  Serial.print("\nConnecting to ");
   Serial.println(ssid);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -77,7 +80,6 @@ void setup_wifi() {
   Serial.println(WiFi.localIP());
 }
 
-// Callback: Saat data diterima dari HP (Slider)
 void callback(char* topic, byte* message, unsigned int length) {
   String msg = "";
   for (int i = 0; i < length; i++) {
@@ -88,15 +90,13 @@ void callback(char* topic, byte* message, unsigned int length) {
   Serial.print("MQTT Received: ");
   Serial.println(msg);
 
-  // Logika Parsing Pesan
   if (msg == "stop" || msg == "off") {
-    sp = 0; // Set target RPM ke 0
-    Serial.println("Target RPM set to 0 (STOP)");
+    sp = 0; 
+    Serial.println("Target RPM: 0 (STOP)");
   } 
   else {
-    // Asumsi pesan adalah angka dari Slider (Target RPM)
     float new_sp = msg.toFloat();
-    // Batasi target RPM agar tidak terlalu gila (misal max 10000)
+    // Batas aman input target RPM
     if (new_sp >= 0 && new_sp <= 10000) {
       sp = new_sp;
       Serial.print("New Setpoint (Target RPM): ");
@@ -108,12 +108,11 @@ void callback(char* topic, byte* message, unsigned int length) {
 void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
-    String clientId = "ESP32_PID_Client_";
-    clientId += String(random(0xffff), HEX);
+    String clientId = "ESP32_Caezar_" + String(random(0xffff), HEX);
     
     if (client.connect(clientId.c_str())) {
       Serial.println("connected");
-      client.subscribe(mqtt_topic); // Subscribe ke topic slider
+      client.subscribe(mqtt_topic); 
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -129,37 +128,32 @@ void calculateRPM() {
   unsigned long current_time = millis();
   unsigned long time_elapsed = current_time - last_rpm_time;
 
-  // Hitung RPM setiap 1000ms (1 detik) agar akurat
   if (time_elapsed >= 1000) { 
     noInterrupts();
     unsigned long current_rev = rev;
     interrupts();
     
-    int holes = 2; // Jumlah lubang encoder disk
+    int holes = 2; 
     float rotations = (float)(current_rev - last_rev_count) / holes;
     rpm = (rotations * 60000.0) / time_elapsed;
     
-    // Low-pass filter sederhana
     rpm_filtered = 0.7 * rpm_filtered + 0.3 * rpm;
     
     last_rev_count = current_rev;
     last_rpm_time = current_time;
-    
-    // Debugging info
-    Serial.print("RPM: "); Serial.print(rpm);
-    Serial.print(" | Filtered: "); Serial.print(rpm_filtered);
-    Serial.print(" | Target (SP): "); Serial.println(sp);
   }
 }
 
 float run_pid(float sp, float pv, float dt) {
-  // PID Coefficients derived from Kc, tauI, tauD
   float KP = Kc;
   float KI = Kc / tauI;
   float KD = Kc * tauD; 
   
-  float ophi = 255; // Max PWM
-  float oplo = 0;   // Min PWM
+  // PERBAIKAN PENTING:
+  // Output PID adalah PWM (0-255), BUKAN RPM.
+  // Jadi batasnya harus 255 sesuai resolusi 8-bit.
+  float ophi = 255; 
+  float oplo = 0;   
   
   float error = sp - pv;
   
@@ -172,9 +166,8 @@ float run_pid(float sp, float pv, float dt) {
   
   float output = P_term + I_term + D_term;
   
-  // Anti-reset windup & Clamping
   if ((output < oplo) || (output > ophi)) {
-    ierr = ierr - KI * error * dt; // Batalkan integral jika saturasi
+    ierr = ierr - KI * error * dt; 
     output = constrain(output, oplo, ophi);
   }
   
@@ -187,7 +180,6 @@ float run_pid(float sp, float pv, float dt) {
 void setup() {
   Serial.begin(115200);
   
-  // Setup Pins
   pinMode(motor1Pin1, OUTPUT);
   pinMode(motor1Pin2, OUTPUT);
   pinMode(enable1Pin, OUTPUT);
@@ -195,15 +187,12 @@ void setup() {
   
   attachInterrupt(digitalPinToInterrupt(pin_rpm), isr, RISING);
 
-  // PWM Setup
   ledcSetup(pwmChannel, freq, resolution);
   ledcAttachPin(enable1Pin, pwmChannel);
   
-  // Motor Direction (Default Forward)
   digitalWrite(motor1Pin1, HIGH);
   digitalWrite(motor1Pin2, LOW);
 
-  // Init Wifi & MQTT
   setup_wifi();
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
@@ -213,7 +202,7 @@ void setup() {
 }
 
 void loop() {
-  // 1. Jaga koneksi MQTT
+  // 1. MQTT Handler
   if (!client.connected()) {
     reconnect();
   }
@@ -221,27 +210,31 @@ void loop() {
 
   new_ts = millis();
   
-  // 2. Hitung RPM terus menerus (di dalam fungsi ada timer 1 detik)
+  // 2. Baca RPM
   calculateRPM();
   
-  // 3. Jalankan Loop PID setiap 1 detik (sinkron dengan pembacaan RPM)
-  // Catatan: Jika ingin respons lebih cepat, interval RPM harus diperkecil, 
-  // tapi akurasi RPM rendah akan turun.
+  // 3. Jalankan PID & Kirim Data (Setiap 1 detik)
   if (new_ts - ts >= 1000) { 
-    pv = rpm; // Menggunakan RPM aktual sebagai Process Value
+    pv = rpm; // Menggunakan RPM aktual
     dt = (new_ts - ts) / 1000.0;
     ts = new_ts;
     
-    // Hitung output PWM berdasarkan Setpoint (dari MQTT) vs RPM Asli
+    // Hitung PID
     op = run_pid(sp, pv, dt);
     
-    // Terapkan ke motor
+    // Terapkan PWM ke motor
     ledcWrite(pwmChannel, op);
     pv_last = pv;
     
-    Serial.print("PID Output (PWM): ");
-    Serial.println(op);
+    // Debug ke Serial
+    Serial.print("Target: "); Serial.print(sp);
+    Serial.print(" | Actual RPM: "); Serial.print(rpm);
+    Serial.print(" | PWM Out: "); Serial.println(op);
+
+    // Kirim ke HP
+    String dataRPM = String(rpm); 
+    client.publish(mqtt_pub_topic, dataRPM.c_str()); 
   }
   
-  delay(10); // Delay kecil untuk stabilitas
+  delay(10); 
 }
