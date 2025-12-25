@@ -1,0 +1,1 @@
+export const API_BASE = "http://YOUR_PC_IP/shopeefood_api";
