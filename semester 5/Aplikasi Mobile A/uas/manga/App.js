@@ -1,69 +1,99 @@
 import React from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 
-const mangaList = [
-  { title: 'What do you do at the end...', image: require('./assets/manga1.jpg') },
-  { title: "Takopi's Original Sin", image: require('./assets/manga2.jpg') },
-  { title: 'Ookami Shounen wa Kyou mo...', image: require('./assets/manga3.jpg') },
-  { title: '"Okaeri, Papa"', image: require('./assets/manga4.jpg') },
-  { title: "Kino's Journey", image: require('./assets/manga5.jpg') },
-  { title: 'Kasane Teto', image: require('./assets/manga6.jpg') },
-];
+// Screens
+import LoginScreen from './components/screens/Loginscreen';
+import RegisterScreen from './components/screens/Registerscreen';
+import Homescreen from './components/screens/Homescreen';
+import MangaReader from './components/screens/MangaReader';
+import BookmarkScreen from './components/screens/BookmarkScreen';
+import HistoryScreen from './components/screens/HistoryScreen';
+import PageViewer from './components/screens/PageViewer';
+import LocalApiScreen from './components/screens/LocalApiScreen';
+import MangaDexScreen from './components/screens/MangaDexScreen';
+import OfflineScreen from './components/screens/OfflineScreen';
+import ProfileScreen from './components/screens/ProfileScreen';          // ✅ tambahin
+import ChangePasswordScreen from './components/screens/ChangePasswordScreen'; // ✅ tambahin
 
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
-export default function Homescreen() {
+function MainTabs() {
   return (
-    <ScrollView style={styles.container}>
-      {/* Banner */}
-      <View style={styles.banner}>
-        <Image source={require('./assets/apothecary.jpg')} style={styles.bannerImage} />
-        <Text style={styles.bannerTitle}>Today's Recommendation</Text>
-        <Text style={styles.mangaTitle}>The Apothecary Diaries</Text>
-        <TouchableOpacity style={styles.readButton}>
-          <Text style={styles.readText}>Read</Text>
-        </TouchableOpacity>
-      </View>
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarStyle: { backgroundColor: '#1e1b2e' },
+        tabBarActiveTintColor: '#a78bfa',
+        tabBarInactiveTintColor: '#aaa',
+        tabBarIcon: ({ color, size }) => {
+          let iconName;
 
-      {/* Latest Release */}
-      <Text style={styles.sectionTitle}>Latest Release</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-        {mangaList.map((manga, index) => (
-          <View key={index} style={styles.mangaItem}>
-            <Image source={manga.image} style={styles.mangaImage} />
-            <Text style={styles.mangaLabel}>{manga.title}</Text>
-          </View>
-        ))}
-      </ScrollView>
+          switch (route.name) {
+            case 'Homescreen':
+              iconName = 'home';
+              break;
+            case 'BookmarkScreen':
+              iconName = 'bookmark';
+              break;
+            case 'HistoryScreen':
+              iconName = 'time';
+              break;
+            case 'LocalAPI':
+              iconName = 'laptop';
+              break;
+            case 'MangaDex':
+              iconName = 'globe';
+              break;
+            case 'Offline':
+              iconName = 'download';
+              break;
+            default:
+              iconName = 'ellipse';
+          }
 
-      {/* Comic List */}
-      <Text style={styles.sectionTitle}>Comic List</Text>
-      <View style={styles.comicList}>
-        <Text style={styles.subTitle}>Recommendations</Text>
-        <Text style={styles.comicItem}>• The Apothecary Diaries</Text>
-
-        <Text style={styles.subTitle}>Latest</Text>
-        {mangaList.map((manga, index) => (
-          <Text key={index} style={styles.comicItem}>• {manga.title}</Text>
-        ))}
-      </View>
-    </ScrollView>
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+      })}
+    >
+      <Tab.Screen name="Homescreen" component={Homescreen} />
+      <Tab.Screen name="BookmarkScreen" component={BookmarkScreen} />
+      <Tab.Screen name="HistoryScreen" component={HistoryScreen} />
+      <Tab.Screen name="LocalAPI" component={LocalApiScreen} />
+      <Tab.Screen name="MangaDex" component={MangaDexScreen} />
+      <Tab.Screen name="Offline" component={OfflineScreen} />
+    </Tab.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { backgroundColor: '#1e1b2e', padding: 16 },
-  banner: { alignItems: 'center', marginBottom: 24 },
-  bannerImage: { width: '100%', height: 180, borderRadius: 12 },
-  bannerTitle: { color: '#aaa', fontSize: 14, marginTop: 8 },
-  mangaTitle: { color: '#fff', fontSize: 20, fontWeight: 'bold', marginVertical: 4 },
-  readButton: { backgroundColor: '#a78bfa', paddingVertical: 8, paddingHorizontal: 24, borderRadius: 20 },
-  readText: { color: '#fff', fontWeight: 'bold' },
-  sectionTitle: { color: '#fff', fontSize: 18, fontWeight: 'bold', marginVertical: 12 },
-  horizontalScroll: { marginBottom: 24 },
-  mangaItem: { marginRight: 12, width: 100 },
-  mangaImage: { width: 100, height: 140, borderRadius: 8 },
-  mangaLabel: { color: '#fff', fontSize: 12, marginTop: 4 },
-  comicList: { backgroundColor: '#2a2540', padding: 12, borderRadius: 8 },
-  subTitle: { color: '#a78bfa', fontSize: 16, fontWeight: 'bold', marginTop: 8 },
-  comicItem: { color: '#fff', fontSize: 14, marginVertical: 2 },
-});
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="MainTabs" component={MainTabs} />
+        <Stack.Screen name="MangaReader" component={MangaReader} />
+        <Stack.Screen
+          name="PageViewer"
+          component={PageViewer}
+          options={{ title: 'Page Viewer', headerShown: true }}
+        />
+        {/* ✅ Tambahin Profile dan ChangePassword */}
+        <Stack.Screen
+          name="ProfileScreen"
+          component={ProfileScreen}
+          options={{ title: 'Profile', headerShown: true }}
+        />
+        <Stack.Screen
+          name="ChangePasswordScreen"
+          component={ChangePasswordScreen}
+          options={{ title: 'Change Password', headerShown: true }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
