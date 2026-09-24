@@ -1,0 +1,142 @@
+========================================================================================================================
+                      INFORMATION RETRIEVAL (TUGAS 1) - TEXT PREPROCESSING PIPELINE REPORT
+========================================================================================================================
+Dataset Source : YoutubeCommentsDataSet.csv (Sample subset: 5 comments)
+Dictionaries   : normalization_dict.csv (Slang/Contractions), stopwords.txt (Custom + NLTK Stopwords)
+Generated At   : Automated Pipeline Execution
+========================================================================================================================
+
+COLUMN DEFINITIONS & PREPROCESSING EXPLANATIONS:
+------------------------------------------------------------------------------------------------------------------------
+1. [Original Text]
+   - Raw, unprocessed comment text directly loaded from the dataset.
+
+2. [Normalization]
+   - Transformasi teks ke bentuk standar:
+     * Case Folding: Mengubah semua karakter menjadi huruf kecil (lowercase).
+     * Noise Removal: Menghapus URL, tag HTML, emoji, dan karakter non-ASCII.
+     * Slang & Contraction Replacement: Mengganti kata tidak baku / singkatan menggunakan kamus normalisasi
+       (contoh: 'u' -> 'you', 'dont' -> 'do not', 'psu' -> 'power supply unit', 'lmg' -> 'linus media group').
+     * Punctuation Removal: Menghapus simbol dan tanda baca yang tidak esensial.
+
+3. [Tokenization]
+   - Pemecahan string kalimat yang telah dinormalisasi menjadi unit-unit token kata individual menggunakan NLTK word_tokenize.
+
+4. [Stopword Removal]
+   - Pemfilteran kata-kata umum (seperti 'the', 'is', 'in', 'at', 'which') serta noise spesifik YouTube/media sosial
+     ('video', 'channel', 'subscribe', 'like') yang tidak memiliki bobot informasi pembeda dalam Information Retrieval.
+
+5. [Stemming]
+   - Pemotongan afiks/imbuhan kata secara heuristik menggunakan algoritma Porter Stemmer untuk menghasilkan akar kata
+     (contoh: 'retailers' -> 'retail', 'required' -> 'requir').
+
+6. [Lemmatization]
+   - Pengembalian kata ke bentuk lema kamus yang tepat secara morfologis dengan mempertimbangkan kelas kata (Part-of-Speech / POS Tagging)
+     menggunakan WordNet Lemmatizer (contoh: 'studies' -> 'study', 'better' -> 'good/well', 'went' -> 'go').
+========================================================================================================================
+
+TABULAR RESULTS FOR PROCESSED SAMPLES:
+------------------------------------------------------------------------------------------------------------------------
++----------+---------------------------+--------------------------------+---------------------------+---------------------------------+---------------------------+---------------------------+
+| Sample   | Original Text             | 1. Normalization               | 2. Tokenization           | 3. Stopword Removal             | 4. Stemming               | 5. Lemmatization          |
+|          | (Raw Input)               | (Lowercased, Slang Replaced,   | (Split into Individual    | (Filtered Noise &               | (Porter Stemmer Root      | (WordNet POS-Aware        |
+|          |                           | Punctuation/URLs Removed)      | Word Tokens)              | Common Non-Informative Words)   | Affix Chopping)           | Dictionary Base Form)     |
++==========+===========================+================================+===========================+=================================+===========================+===========================+
+| Sample 1 | lets not forget that      | let us not forget that         | let, us, not, forget,     | let, us, forget, apple,         | let, us, forget, appl,    | let, u, forget, apple,    |
+|          | apple pay in 2014         | apple pay in 2014              | that, apple, pay, in,     | pay, 2014, required,            | pay, 2014, requir, brand, | pay, 2014, require,       |
+|          | required a brand new      | required a brand new           | 2014, required, a, brand, | brand, new, iphone,             | new, iphon, order, use,   | brand, new, iphone,       |
+|          | iphone in order to use it | iphone in order to use it      | new, iphone, in, order,   | order, use, significant,        | signific, portion, appl,  | order, use, significant,  |
+|          | a significant portion of  | a significant portion of       | to, use, it, a,           | portion, apples, user,          | user, base, abl, use,     | portion, apple, user,     |
+|          | apples user base wasnt    | apples user base was not       | significant, portion, of, | base, able, use, wanted,        | want, success, iphon,     | base, able, use, want,    |
+|          | able to use it even if    | able to use it even if         | apples, user, base, was,  | successive, iphone,             | incorpor, technolog,      | successive, iphone,       |
+|          | they wanted to as each    | they wanted to as each         | not, able, to, use, it,   | incorporated, technology,       | older, iphon, replac,     | incorporate, technology,  |
+|          | successive iphone         | successive iphone              | even, if, they, wanted,   | older, iphones, replaced,       | number, peopl, use,       | old, iphones, replace,    |
+|          | incorporated the          | incorporated the               | to, as, each, successive, | number, people, use,            | technolog, increas        | number, people, use,      |
+|          | technology and older      | technology and older           | iphone, incorporated,     | technology, increased           |                           | technology, increase      |
+|          | iphones were replaced the | iphones were replaced the      | the, technology, and,     |                                 |                           |                           |
+|          | number of people who      | number of people who           | older, iphones, were,     |                                 |                           |                           |
+|          | could use the technology  | could use the technology       | replaced, the, number,    |                                 |                           |                           |
+|          | increased                 | increased                      | of, people, who, could,   |                                 |                           |                           |
+|          |                           |                                | use, the, technology,     |                                 |                           |                           |
+|          |                           |                                | increased                 |                                 |                           |                           |
++----------+---------------------------+--------------------------------+---------------------------+---------------------------------+---------------------------+---------------------------+
+| Sample 2 | here in nz 50 of          | here in nz 50 of               | here, in, nz, 50, of,     | nz, 50, retailers,              | nz, 50, retail,           | nz, 50, retailer,         |
+|          | retailers don’t even have | retailers do not even          | retailers, do, not, even, | contactless, credit,            | contactless, credit,      | contactless, credit,      |
+|          | contactless credit card   | have contactless credit        | have, contactless,        | card, machines, paywave,        | card, machin, paywav,     | card, machine, paywave,   |
+|          | machines like paywave     | card machines like             | credit, card, machines,   | support, apple, pay,            | support, appl, pay, high, | support, apple, pay,      |
+|          | which support apple pay   | paywave which support          | like, paywave, which,     | high, fees                      | fee                       | high, fee                 |
+|          | they don’t like the high  | apple pay they do not          | support, apple, pay,      |                                 |                           |                           |
+|          | fees that come with these | like the high fees that        | they, do, not, like, the, |                                 |                           |                           |
+|          |                           | come with these                | high, fees, that, come,   |                                 |                           |                           |
+|          |                           |                                | with, these               |                                 |                           |                           |
++----------+---------------------------+--------------------------------+---------------------------+---------------------------------+---------------------------+---------------------------+
+| Sample 3 | i will forever            | i will forever                 | i, will, forever,         | forever, acknowledge,           | forev, acknowledg, help,  | forever, acknowledge,     |
+|          | acknowledge this channel  | acknowledge this channel       | acknowledge, this,        | help, lessons, ideas,           | lesson, idea, explan,     | help, lesson, ideas,      |
+|          | with the help of your     | with the help of your          | channel, with, the, help, | explanations, quite,            | quit, help, sit, comfort, | explanation, quite,       |
+|          | lessons and ideas         | lessons and ideas              | of, your, lessons, and,   | helpful, sit, comfort,          | monitor, account, growth  | helpful, sit, comfort,    |
+|          | explanations now its      | explanations now its           | ideas, explanations, now, | monitor, account, growth        |                           | monitor, account, growth  |
+|          | quite helpful while youll | quite helpful while you        | its, quite, helpful,      |                                 |                           |                           |
+|          | just sit at your comfort  | will just sit at your          | while, you, will, just,   |                                 |                           |                           |
+|          | and monitor your account  | comfort and monitor your       | sit, at, your, comfort,   |                                 |                           |                           |
+|          | growth                    | account growth                 | and, monitor, your,       |                                 |                           |                           |
+|          |                           |                                | account, growth           |                                 |                           |                           |
++----------+---------------------------+--------------------------------+---------------------------+---------------------------------+---------------------------+---------------------------+
+| Sample 4 | whenever i go to a place  | whenever i go to a place       | whenever, i, go, to, a,   | whenever, go, place,            | whenev, go, place, take,  | whenever, go, place,      |
+|          | that doesn’t take apple   | that does not take apple       | place, that, does, not,   | take, apple, pay, happen,       | appl, pay, happen, often, | take, apple, pay, happen, |
+|          | pay doesn’t happen too    | pay does not happen too        | take, apple, pay, does,   | often, drag, contactless,       | drag, contactless, covid, | often, drag, contactless, |
+|          | often it’s such a drag    | often its such a drag          | not, happen, too, often,  | covid, habits, getting,         | habit, get, appl, card,   | covid, habit, get, apple, |
+|          | between ‘contactless      | between contactless covid      | its, such, a, drag,       | apple, card, gotten,            | gotten, use, appl, pay,   | card, gotten, use, apple, |
+|          | covid’ habits and my      | habits and my getting the      | between, contactless,     | used, apple, pay,               | serious, annoy, store,    | pay, seriously, annoy,    |
+|          | getting the apple card    | apple card i have gotten       | covid, habits, and, my,   | seriously, annoyed,             | take, feel, shock, crazi, | store, take, feel, shock, |
+|          | i’ve gotten so used to    | so used to apple pay that      | getting, the, apple,      | store, take, feels,             | quickli, took, shop,      | crazy, quickly, take,     |
+|          | apple pay that i get      | i get seriously annoyed        | card, i, have, gotten,    | shock, crazy, quickly,          | routin, offici,           | shop, routine,            |
+|          | seriously annoyed when a  | when a store does not          | so, used, to, apple, pay, | took, shopping, routine,        | brainwash, appl, feel,    | officially, brainwash,    |
+|          | store doesn’t take it it  | take it it feels like a        | that, i, get, seriously,  | officially, brainwashed,        | inconveni, carri, physic, | apple, feel,              |
+|          | feels like a shock it’s   | shock its crazy how            | annoyed, when, a, store,  | apple, feels,                   | card, pocket              | inconvenient, carry,      |
+|          | crazy how quickly it took | quickly it took over my        | does, not, take, it, it,  | inconvenient, carry,            |                           | physical, card, pocket    |
+|          | over my shopping routine  | shopping routine i have        | feels, like, a, shock,    | physical, card, pocket          |                           |                           |
+|          | i’ve officially been      | officially been                | its, crazy, how, quickly, |                                 |                           |                           |
+|          | brainwashed by apple      | brainwashed by apple           | it, took, over, my,       |                                 |                           |                           |
+|          | because now it feels so   | because now it feels so        | shopping, routine, i,     |                                 |                           |                           |
+|          | inconvenient to even      | inconvenient to even           | have, officially, been,   |                                 |                           |                           |
+|          | carry a physical card in  | carry a physical card in       | brainwashed, by, apple,   |                                 |                           |                           |
+|          | my pocket                 | my pocket                      | because, now, it, feels,  |                                 |                           |                           |
+|          |                           |                                | so, inconvenient, to,     |                                 |                           |                           |
+|          |                           |                                | even, carry, a, physical, |                                 |                           |                           |
+|          |                           |                                | card, in, my, pocket      |                                 |                           |                           |
++----------+---------------------------+--------------------------------+---------------------------+---------------------------------+---------------------------+---------------------------+
+| Sample 5 | apple pay is so           | apple pay is so                | apple, pay, is, so,       | apple, pay, convenient,         | appl, pay, conveni,       | apple, pay, convenient,   |
+|          | convenient secure and     | convenient secure and          | convenient, secure, and,  | secure, easy, use, used,        | secur, easi, use, use,    | secure, easy, use, used,  |
+|          | easy to use i used it     | easy to use i used it          | easy, to, use, i, used,   | korean, japanese,               | korean, japanes, airport, | korean, japanese,         |
+|          | while at the korean and   | while at the korean and        | it, while, at, the,       | airports, need, physical,       | need, physic, credit,     | airport, need, physical,  |
+|          | japanese airports no need | japanese airports no need      | korean, and, japanese,    | credit, cards                   | card                      | credit, card              |
+|          | for physical credit cards | for physical credit cards      | airports, no, need, for,  |                                 |                           |                           |
+|          |                           |                                | physical, credit, cards   |                                 |                           |                           |
++----------+---------------------------+--------------------------------+---------------------------+---------------------------------+---------------------------+---------------------------+
+
+========================================================================================================================
+STEMMING VS LEMMATIZATION COMPARISON MATRIX:
+------------------------------------------------------------------------------------------------------------------------
++-----------------+------------------+------------------+-----------+
+| Original Word   | Porter Stemmer   | POS Lemmatizer   | POS Tag   |
++=================+==================+==================+===========+
+| running         | run              | run              | v         |
++-----------------+------------------+------------------+-----------+
+| studies         | studi            | study            | n         |
++-----------------+------------------+------------------+-----------+
+| better          | better           | well             | r         |
++-----------------+------------------+------------------+-----------+
+| went            | went             | go               | v         |
++-----------------+------------------+------------------+-----------+
+| universities    | univers          | university       | n         |
++-----------------+------------------+------------------+-----------+
+| bought          | bought           | bought           | n         |
++-----------------+------------------+------------------+-----------+
+| contactless     | contactless      | contactless      | n         |
++-----------------+------------------+------------------+-----------+
+| retailers       | retail           | retailer         | n         |
++-----------------+------------------+------------------+-----------+
+| remorse         | remors           | remorse          | n         |
++-----------------+------------------+------------------+-----------+
+
+========================================================================================================================
