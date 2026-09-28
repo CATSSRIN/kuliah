@@ -1,0 +1,30 @@
+================================================================================
+LAPORAN HASIL EVALUASI MODEL - INFORMATION RETRIEVAL (TUGAS 2)
+Dataset: IMDB Movie Reviews (5,000 Sample Reviews)
+================================================================================
+
+1. EVALUASI DOCUMENT CLUSTERING (K-MEANS, k=2)
+--------------------------------------------------------------------------------
+- Silhouette Score (Internal)          : 0.0032 (Mendekati 1.0 -> Cluster terpisah baik)
+- Inertia / WCSS (Internal)            : 4764.18
+- Adjusted Rand Index / ARI (Eksternal): 0.0896 (Kesesuaian terhadap label sentimen acuan)
+- Jumlah Dokumen per Cluster           :
+  * Cluster 0: 2095 dokumen
+  * Cluster 1: 2905 dokumen
+
+2. EVALUASI DOCUMENT CLASSIFICATION (TF-IDF + LOGISTIC REGRESSION)
+--------------------------------------------------------------------------------
+- Test Accuracy                        : 86.88%
+- F1-Score (Positive Class)            : 87.05%
+
+Classification Report:
+              precision    recall  f1-score   support
+
+    negative       0.88      0.86      0.87       625
+    positive       0.86      0.88      0.87       625
+
+    accuracy                           0.87      1250
+   macro avg       0.87      0.87      0.87      1250
+weighted avg       0.87      0.87      0.87      1250
+
+================================================================================
