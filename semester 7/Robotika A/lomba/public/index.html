@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Timer Lomba Robotika & Balap</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;0,800;1,700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-background">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <div id="app" class="app-container">
+    <!-- NOTIFICATION TOAST -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- COUNTDOWN OVERLAY -->
+    <div id="countdown-overlay" class="countdown-overlay hidden">
+      <div class="countdown-card">
+        <span class="countdown-label">BERSAP-SIAP</span>
+        <div id="countdown-number" class="countdown-number">3</div>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         VIEW 1: AUTH / LOGIN SCREEN
+    ======================================================== -->
+    <section id="login-view" class="view-section active">
+      <div class="login-card glass-panel">
+        <div class="card-brand">
+          <div class="brand-icon">
+            <i class="fa-solid fa-stopwatch-20"></i>
+          </div>
+          <h1 class="brand-title">ROBOTICS RACE TIMER</h1>
+          <p class="brand-subtitle">Sistem Pencatat Waktu Presisi Real-Time</p>
+        </div>
+
+        <!-- Login Tabs: Peserta / Admin -->
+        <div class="auth-tabs">
+          <button id="tab-btn-user" class="tab-btn active" onclick="switchAuthTab('user')">
+            <i class="fa-solid fa-user-astronaut"></i> Peserta / Tim
+          </button>
+          <button id="tab-btn-admin" class="tab-btn" onclick="switchAuthTab('admin')">
+            <i class="fa-solid fa-shield-halved"></i> Juri / Admin
+          </button>
+        </div>
+
+        <!-- Participant Form -->
+        <form id="user-login-form" class="auth-form active" onsubmit="handleUserLogin(event)">
+          <div class="input-group">
+            <label for="input-username">
+              <i class="fa-solid fa-id-card"></i> Nama Tim / Peserta
+            </label>
+            <input 
+              type="text" 
+              id="input-username" 
+              placeholder="Contoh: Robotika Tim Alpha" 
+              autocomplete="off" 
+              required 
+              autofocus 
+            />
+            <span class="input-hint">Cukup masukkan nama/tim kamu untuk bergabung ke sesi lomba.</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block glow-effect">
+            <span>Masuk ke Arena Lomba</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+
+        <!-- Admin Form -->
+        <form id="admin-login-form" class="auth-form" onsubmit="handleAdminLogin(event)">
+          <div class="input-group">
+            <label for="input-admin-password">
+              <i class="fa-solid fa-key"></i> Password Admin
+            </label>
+            <input 
+              type="password" 
+              id="input-admin-password" 
+              placeholder="Masukkan password admin..." 
+              autocomplete="current-password" 
+              required 
+            />
+            <span class="input-hint">Default password: <code>admin123</code></span>
+          </div>
+
+          <button type="submit" class="btn btn-admin btn-block glow-effect">
+            <span>Buka Dashboard Admin</span>
+            <i class="fa-solid fa-gauge-high"></i>
+          </button>
+        </form>
+
+        <div class="network-info-box">
+          <i class="fa-solid fa-wifi"></i>
+          <span>Bisa diakses bersamaan dari Laptop, HP, atau Tablet di jaringan Wi-Fi yang sama.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         VIEW 2: PARTICIPANT / USER SCREEN
+    ======================================================== -->
+    <section id="user-view" class="view-section hidden">
+      <!-- Header -->
+      <header class="top-nav glass-panel">
+        <div class="nav-left">
+          <div class="nav-badge">
+            <i class="fa-solid fa-microchip"></i>
+            <span id="user-round-title">Babak 1</span>
+          </div>
+          <div class="user-identity">
+            <span class="user-greeting">Halo,</span>
+            <strong id="user-display-name">Peserta</strong>
+          </div>
+        </div>
+
+        <div class="nav-right">
+          <div id="connection-status-user" class="status-indicator online">
+            <span class="dot"></span>
+            <span class="status-text">Terhubung</span>
+          </div>
+          <button class="btn btn-icon btn-sm" onclick="logout()" title="Keluar">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Stage -->
+      <main class="user-stage">
+        <!-- Status Banner -->
+        <div id="user-status-pill" class="status-pill idle">
+          <i class="fa-solid fa-circle-pause"></i>
+          <span id="user-status-text">Menunggu Admin Memulai Timer...</span>
+        </div>
+
+        <!-- Big Display Timer -->
+        <div class="timer-display-container glass-panel">
+          <div class="timer-header-info">
+            <span>LIVE STOPWATCH</span>
+            <span id="user-rank-badge" class="mini-rank-badge hidden">Rank #1</span>
+          </div>
+
+          <div id="user-timer-display" class="timer-digits">00:00.000</div>
+
+          <!-- Motivational/Status subtext -->
+          <p id="user-helper-msg" class="timer-helper">
+            Bersiap di lintasan. Tombol STOP akan aktif saat admin memulai lomba!
+          </p>
+        </div>
+
+        <!-- Giant STOP Button -->
+        <div class="action-dock">
+          <button 
+            id="user-stop-btn" 
+            class="btn-stop-giant" 
+            onclick="handleUserStop()" 
+            disabled
+          >
+            <div class="stop-inner">
+              <i class="fa-solid fa-hand"></i>
+              <span class="stop-text">STOP TIMER</span>
+              <span class="stop-sub">Klik atau tekan SPASI saat finish</span>
+            </div>
+            <div class="ripple-effect"></div>
+          </button>
+        </div>
+
+        <!-- Result Card (shown after user stopped) -->
+        <div id="user-result-card" class="result-card glass-panel hidden">
+          <div class="result-icon">
+            <i class="fa-solid fa-trophy"></i>
+          </div>
+          <div class="result-body">
+            <h3>Waktu Finish Kamu</h3>
+            <div id="user-result-time" class="result-time">00:00.000</div>
+            <p id="user-result-meta">Data waktu kamu berhasil dikirim langsung ke layar Admin!</p>
+          </div>
+        </div>
+      </main>
+    </section>
+
+    <!-- ========================================================
+         VIEW 3: ADMIN DASHBOARD
+    ======================================================== -->
+    <section id="admin-view" class="view-section hidden">
+      <!-- Admin Top Bar -->
+      <header class="admin-top-nav glass-panel">
+        <div class="nav-left">
+          <div class="admin-logo">
+            <i class="fa-solid fa-gauge-high"></i>
+            <span>ADMIN CONTROL PANEL</span>
+          </div>
+          <div class="round-editor">
+            <input 
+              type="text" 
+              id="admin-round-input" 
+              value="Babak 1" 
+              placeholder="Nama Babak/Match..."
+              onchange="handleUpdateRoundName(this.value)"
+            />
+            <button class="btn btn-sm btn-outline" onclick="handleUpdateRoundName(document.getElementById('admin-round-input').value)">
+              <i class="fa-solid fa-floppy-disk"></i> Simpan
+            </button>
+          </div>
+        </div>
+
+        <div class="nav-right">
+          <div class="sound-toggle">
+            <button id="sound-toggle-btn" class="btn btn-sm btn-ghost" onclick="toggleSound()" title="Toggle Sound FX">
+              <i class="fa-solid fa-volume-high"></i>
+            </button>
+          </div>
+          <div id="connection-status-admin" class="status-indicator online">
+            <span class="dot"></span>
+            <span class="status-text">Server Online</span>
+          </div>
+          <button class="btn btn-icon btn-sm btn-danger-ghost" onclick="logout()" title="Keluar Admin">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </header>
+
+      <div class="admin-grid">
+        <!-- LEFT COLUMN: MASTER TIMER & CONTROLS -->
+        <div class="admin-col-left">
+          <!-- Master Timer Card -->
+          <div class="master-timer-card glass-panel">
+            <div class="card-header-flex">
+              <span class="section-tag"><i class="fa-solid fa-satellite-dish"></i> MASTER SYNC TIMER</span>
+              <span id="admin-status-badge" class="badge-status idle">STANDBY</span>
+            </div>
+
+            <div id="admin-timer-display" class="master-timer-digits">00:00.000</div>
+
+            <!-- Controller Buttons -->
+            <div class="admin-controls-grid">
+              <button 
+                id="btn-admin-start-cd" 
+                class="btn btn-success btn-lg glow-effect" 
+                onclick="adminStartWithCountdown()"
+              >
+                <i class="fa-solid fa-play"></i>
+                <span>Mulai (Countdown 3-2-1)</span>
+              </button>
+
+              <button 
+                id="btn-admin-start-direct" 
+                class="btn btn-secondary btn-lg" 
+                onclick="adminStartDirect()"
+              >
+                <i class="fa-solid fa-bolt"></i>
+                <span>Mulai Langsung</span>
+              </button>
+
+              <button 
+                id="btn-admin-stop" 
+                class="btn btn-danger btn-lg" 
+                onclick="adminStopAll()" 
+                disabled
+              >
+                <i class="fa-solid fa-stop"></i>
+                <span>Hentikan Semua</span>
+              </button>
+
+              <button 
+                id="btn-admin-reset" 
+                class="btn btn-warning btn-lg" 
+                onclick="adminResetRound()"
+              >
+                <i class="fa-solid fa-rotate-left"></i>
+                <span>Reset Ronde / Baru</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Stats Overview -->
+          <div class="stats-cards-grid">
+            <div class="stat-card glass-panel">
+              <div class="stat-icon icon-cyan"><i class="fa-solid fa-users"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">Total Peserta</span>
+                <strong id="stat-total-users" class="stat-value">0</strong>
+              </div>
+            </div>
+
+            <div class="stat-card glass-panel">
+              <div class="stat-icon icon-green"><i class="fa-solid fa-person-running"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">Running</span>
+                <strong id="stat-running-users" class="stat-value">0</strong>
+              </div>
+            </div>
+
+            <div class="stat-card glass-panel">
+              <div class="stat-icon icon-amber"><i class="fa-solid fa-flag-checkered"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">Selesai / Finish</span>
+                <strong id="stat-finished-users" class="stat-value">0</strong>
+              </div>
+            </div>
+
+            <div class="stat-card glass-panel">
+              <div class="stat-icon icon-purple"><i class="fa-solid fa-stopwatch"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">Best Time (#1)</span>
+                <strong id="stat-best-time" class="stat-value font-mono">--:--.---</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Network Share Helper -->
+          <div class="network-share-card glass-panel">
+            <div class="share-header">
+              <i class="fa-solid fa-network-wired"></i>
+              <strong>Akses Peserta (HP / Laptop Lain)</strong>
+            </div>
+            <p class="share-desc">Hubungkan HP atau laptop peserta ke Wi-Fi yang sama, lalu buka alamat:</p>
+            <div id="admin-ip-list" class="ip-tags-list">
+              <span class="ip-badge">http://localhost:3000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: LIVE LEADERBOARD / SCOREBOARD -->
+        <div class="admin-col-right">
+          <div class="leaderboard-card glass-panel">
+            <div class="table-header-flex">
+              <div>
+                <h2><i class="fa-solid fa-ranking-star"></i> Papan Skor Real-Time</h2>
+                <p class="table-sub">Waktu peserta akan langsung muncul secara instan saat mereka klik STOP</p>
+              </div>
+              <div class="table-actions">
+                <button class="btn btn-sm btn-outline" onclick="exportToCSV()">
+                  <i class="fa-solid fa-file-csv"></i> Export CSV
+                </button>
+                <button class="btn btn-sm btn-outline" onclick="printLeaderboard()">
+                  <i class="fa-solid fa-print"></i> Cetak / PDF
+                </button>
+              </div>
+            </div>
+
+            <!-- Leaderboard Table -->
+            <div class="table-responsive">
+              <table id="leaderboard-table" class="data-table">
+                <thead>
+                  <tr>
+                    <th width="70">Peringkat</th>
+                    <th>Nama Tim / Peserta</th>
+                    <th width="120">Status</th>
+                    <th width="140">Waktu Finish</th>
+                    <th width="140">Penalti (+/-)</th>
+                    <th width="140">Waktu Akhir</th>
+                    <th width="120">Selisih (#1)</th>
+                    <th width="100" class="text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="leaderboard-tbody">
+                  <tr class="empty-row">
+                    <td colspan="8">
+                      <div class="empty-state">
+                        <i class="fa-solid fa-user-clock"></i>
+                        <p>Belum ada peserta yang bergabung.</p>
+                        <small>Minta peserta membuka website ini dan memasukkan nama tim mereka.</small>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Socket.IO Client Script -->
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- Main Application Script -->
+  <script src="js/app.js"></script>
+</body>
+</html>

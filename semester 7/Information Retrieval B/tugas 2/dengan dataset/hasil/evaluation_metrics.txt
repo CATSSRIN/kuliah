@@ -1,30 +1,30 @@
 ================================================================================
 LAPORAN HASIL EVALUASI MODEL - INFORMATION RETRIEVAL (TUGAS 2)
-Dataset: IMDB Movie Reviews (5,000 Sample Reviews)
+Dataset: IMDB Movie Reviews (50,000 Total Reviews - Full Dataset)
 ================================================================================
 
 1. EVALUASI DOCUMENT CLUSTERING (K-MEANS, k=2)
 --------------------------------------------------------------------------------
 - Silhouette Score (Internal)          : 0.0032 (Mendekati 1.0 -> Cluster terpisah baik)
-- Inertia / WCSS (Internal)            : 4764.18
-- Adjusted Rand Index / ARI (Eksternal): 0.0896 (Kesesuaian terhadap label sentimen acuan)
+- Inertia / WCSS (Internal)            : 47644.23
+- Adjusted Rand Index / ARI (Eksternal): 0.1160 (Kesesuaian terhadap label sentimen acuan)
 - Jumlah Dokumen per Cluster           :
-  * Cluster 0: 2095 dokumen
-  * Cluster 1: 2905 dokumen
+  * Cluster 0: 21185 dokumen
+  * Cluster 1: 28815 dokumen
 
 2. EVALUASI DOCUMENT CLASSIFICATION (TF-IDF + LOGISTIC REGRESSION)
 --------------------------------------------------------------------------------
-- Test Accuracy                        : 86.88%
-- F1-Score (Positive Class)            : 87.05%
+- Test Accuracy                        : 89.37%
+- F1-Score (Positive Class)            : 89.47%
 
 Classification Report:
               precision    recall  f1-score   support
 
-    negative       0.88      0.86      0.87       625
-    positive       0.86      0.88      0.87       625
+    negative       0.90      0.88      0.89      6250
+    positive       0.89      0.90      0.89      6250
 
-    accuracy                           0.87      1250
-   macro avg       0.87      0.87      0.87      1250
-weighted avg       0.87      0.87      0.87      1250
+    accuracy                           0.89     12500
+   macro avg       0.89      0.89      0.89     12500
+weighted avg       0.89      0.89      0.89     12500
 
 ================================================================================
