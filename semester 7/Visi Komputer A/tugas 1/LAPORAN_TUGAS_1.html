@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan Tugas 1 - Visi Komputer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --primary: #1b5e20;
+      --primary-light: #2e7d32;
+      --primary-subtle: #e8f5e9;
+      --accent: #2e7d32;
+      --dark: #1e293b;
+      --slate: #475569;
+      --light-bg: #f8fafc;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--dark);
+      background-color: #f1f5f9;
+      line-height: 1.65;
+      font-size: 11pt;
+    }
+
+    .page-container {
+      max-width: 850px;
+      margin: 20px auto;
+      background: #ffffff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      padding: 50px 60px;
+    }
+
+    /* Cover Page Section */
+    .cover {
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 60px 50px;
+      background: linear-gradient(180deg, #ffffff 0%, #fafffa 100%);
+      margin-bottom: 50px;
+      page-break-after: always;
+    }
+
+    .cover-header {
+      text-align: center;
+    }
+
+    .badge-top {
+      display: inline-block;
+      padding: 6px 16px;
+      background: var(--primary-subtle);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-radius: 30px;
+      margin-bottom: 25px;
+      border: 1px solid rgba(46, 125, 50, 0.2);
+    }
+
+    .cover-title {
+      font-size: 24pt;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1.25;
+      margin-bottom: 12px;
+    }
+
+    .cover-subtitle {
+      font-size: 13pt;
+      color: var(--slate);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .cover-illustration {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .cover-illustration .topic-box {
+      display: inline-block;
+      background: #ffffff;
+      border: 2px solid #c8e6c9;
+      border-radius: 12px;
+      padding: 20px 30px;
+      box-shadow: 0 8px 16px rgba(46, 125, 50, 0.06);
+    }
+
+    .topic-box h3 {
+      color: var(--primary);
+      font-size: 14pt;
+      margin-bottom: 6px;
+    }
+
+    .topic-box p {
+      color: var(--slate);
+      font-size: 10pt;
+    }
+
+    .cover-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 30px;
+    }
+
+    .student-info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 25px;
+    }
+
+    .student-info-table td {
+      padding: 6px 10px;
+      font-size: 10.5pt;
+    }
+
+    .student-info-table td.label {
+      width: 25%;
+      font-weight: 600;
+      color: var(--slate);
+    }
+
+    .student-info-table td.colon {
+      width: 3%;
+      color: var(--slate);
+    }
+
+    .student-info-table td.val {
+      color: var(--dark);
+      font-weight: 500;
+    }
+
+    .university-branding {
+      text-align: center;
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 11pt;
+      letter-spacing: 0.5px;
+    }
+
+    /* Content Styling */
+    h2.section-heading {
+      color: var(--primary);
+      font-size: 16pt;
+      font-weight: 800;
+      border-bottom: 2px solid var(--primary-subtle);
+      padding-bottom: 8px;
+      margin-top: 35px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h3.sub-heading {
+      color: var(--dark);
+      font-size: 12pt;
+      font-weight: 700;
+      margin-top: 22px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin-bottom: 12px;
+      text-align: justify;
+    }
+
+    /* Media & Capture Box */
+    .media-card {
+      background: var(--light-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .video-info-list {
+      list-style: none;
+      margin-bottom: 18px;
+    }
+
+    .video-info-list li {
+      margin-bottom: 8px;
+      font-size: 10.5pt;
+    }
+
+    .video-info-list strong {
+      color: var(--slate);
+      display: inline-block;
+      width: 140px;
+    }
+
+    .video-info-list a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .image-preview-container {
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    .image-preview-container img {
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .image-caption {
+      font-size: 9.5pt;
+      color: var(--slate);
+      font-style: italic;
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    .callout-box {
+      background: #f0fdf4;
+      border-left: 4px solid var(--primary);
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 15px 0;
+      font-size: 10.5pt;
+    }
+
+    .callout-box strong {
+      color: var(--primary);
+    }
+
+    /* Pipeline Diagram */
+    .pipeline-wrapper {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 18px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5pt;
+      line-height: 1.45;
+      overflow-x: auto;
+      margin: 18px 0;
+      border: 1px solid #334155;
+    }
+
+    /* Lists and Cards */
+    .numbered-list {
+      padding-left: 20px;
+      margin-bottom: 16px;
+    }
+
+    .numbered-list li {
+      margin-bottom: 10px;
+      padding-left: 4px;
+    }
+
+    .bullet-list {
+      padding-left: 20px;
+      margin-bottom: 14px;
+    }
+
+    .bullet-list li {
+      margin-bottom: 6px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 18px 0;
+    }
+
+    .status-card {
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+    }
+
+    .status-card.pros {
+      border-top: 4px solid #16a34a;
+      background: #fafdfa;
+    }
+
+    .status-card.cons {
+      border-top: 4px solid #dc2626;
+      background: #fdfafa;
+    }
+
+    .status-card h4 {
+      font-size: 11pt;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-card.pros h4 { color: #16a34a; }
+    .status-card.cons h4 { color: #dc2626; }
+
+    .status-card ul {
+      padding-left: 18px;
+      font-size: 9.8pt;
+    }
+
+    .status-card ul li {
+      margin-bottom: 8px;
+    }
+
+    /* Print Settings */
+    @media print {
+      body {
+        background: #ffffff;
+        font-size: 10.5pt;
+      }
+      .page-container {
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+        max-width: 100%;
+      }
+      .cover {
+        min-height: 98vh;
+        border: 1.5px solid #cbd5e1;
+        page-break-after: always;
+        padding: 40px;
+      }
+      .page-break {
+        page-break-after: always;
+      }
+      .pipeline-wrapper {
+        background: #1e293b !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .badge-top, .callout-box, .status-card {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-container">
+
+  <!-- COVER PAGE -->
+  <div class="cover">
+    <div class="cover-header">
+      <div class="badge-top">Tugas 1 • Visi Komputer</div>
+      <h1 class="cover-title">PENERAPAN VISI KOMPUTER DALAM KEHIDUPAN NYATA</h1>
+      <p class="cover-subtitle">Analisis Sistem <em>Targeted Spraying</em> Berbasis Visi Komputer dan <em>Deep Learning</em> pada John Deere See & Spray™ Ultimate</p>
+    </div>
+
+    <div class="cover-illustration">
+      <div class="topic-box">
+        <h3>Bidang: Smart Precision Agriculture</h3>
+        <p>Object Detection • Semantic Segmentation • Edge AI • Microsecond Precision Actuation</p>
+      </div>
+    </div>
+
+    <div class="cover-footer">
+      <table class="student-info-table">
+        <tr>
+          <td class="label">Mata Kuliah</td>
+          <td class="colon">:</td>
+          <td class="val">Visi Komputer (Kelas A)</td>
+        </tr>
+        <tr>
+          <td class="label">Nama Mahasiswa</td>
+          <td class="colon">:</td>
+          <td class="val">Caezarlov</td>
+        </tr>
+        <tr>
+          <td class="label">NIM</td>
+          <td class="colon">:</td>
+          <td class="val">[Isi NIM Anda]</td>
+        </tr>
+        <tr>
+          <td class="label">Dosen Pengampu</td>
+          <td class="colon">:</td>
+          <td class="val">Dosen Pengampu Visi Komputer</td>
+        </tr>
+        <tr>
+          <td class="label">Semester / Tahun</td>
+          <td class="colon">:</td>
+          <td class="val">Semester 7 / 2024–2025</td>
+        </tr>
+      </table>
+      <div class="university-branding">
+        PROGRAM STUDI TEKNIK INFORMATIKA / ILMU KOMPUTER<br>
+        FAKULTAS TEKNOLOGI INFORMASI
+      </div>
+    </div>
+  </div>
+
+  <!-- BAGIAN 1: VIDEO DAN CAPTURE -->
+  <h2 class="section-heading">1. Link Video dan Capture Menarik</h2>
+  
+  <div class="media-card">
+    <ul class="video-info-list">
+      <li><strong>Judul Video</strong>: See & Spray™ Ultimate Theory of Operation | John Deere</li>
+      <li><strong>Kanal Pengunggah</strong>: Official John Deere YouTube Channel</li>
+      <li><strong>Tahun Publikasi</strong>: 2022 (Terbit dalam 5 tahun terakhir)</li>
+      <li><strong>Link Video</strong>: <a href="https://www.youtube.com/watch?v=ytJELX6rKV4" target="_blank">https://www.youtube.com/watch?v=ytJELX6rKV4</a></li>
+    </ul>
+
+    <div class="image-preview-container">
+      <img src="capture_video.jpg" alt="Capture Video John Deere See & Spray Ultimate">
+      <div class="image-caption">Gambar 1: Cuplikan demonstrasi operasional John Deere See & Spray™ Ultimate yang menampilkan integrasi 36 kamera resolusi tinggi pada boom 120 kaki dengan inferensi AI berkecepatan tinggi.</div>
+    </div>
+
+    <div class="callout-box">
+      <strong>Deskripsi Bagian Menarik:</strong><br>
+      Aspek paling memukau dari video ini adalah demonstrasi visual mengenai <em>"Green-on-Green Detection"</em> dalam kondisi kerja nyata. Ketika traktor melaju kencang di lahan pertanian dengan kecepatan hingga <strong>12 mph (sekitar 20 km/jam)</strong>, sistem visi komputer mampu membedakan gulma dari tanaman budidaya (seperti jagung dan kedelai) yang sama-sama berwarna hijau dalam hitungan milidetik. Sistem langsung mengaktifkan semprotan presisi tepat sasaran pada gulma tanpa mengenai tanaman utama atau tanah kosong.
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- BAGIAN 2: PEMBAHASAN -->
+  <h2 class="section-heading">2. Pembahasan</h2>
+
+  <!-- a. Kemampuan Visi Komputer -->
+  <h3 class="sub-heading">a. Kemampuan Visi Komputer (Computer Vision Capabilities)</h3>
+  <p>Sistem <em>See & Spray™ Ultimate</em> menggabungkan berbagai teknologi tingkat lanjut dalam visi komputer, antara lain:</p>
+  <ol class="numbered-list">
+    <li><strong>Deteksi Objek Real-Time (<em>Real-Time Object Detection</em>):</strong> Sistem mampu melacak dan melokalisasi tanaman budidaya maupun gulma secara simultan di setiap frame yang diambil oleh kamera dengan resolusi tinggi.</li>
+    <li><strong>Diferensiasi Hijau-di-atas-Hijau (<em>Green-on-Green Discrimination</em>):</strong> Melakukan segmentasi dan ekstraksi fitur morfologi daun (seperti tekstur daun, sudut pertulangan, kerapatan vena, dan kontur kanopi) untuk memisahkan gulma dari daun tanaman utama, melampaui teknik konvensional berbasis indeks warna (seperti NDVI).</li>
+    <li><strong>Sinkronisasi Multi-Kamera Terdistribusi (<em>Multi-Camera Edge Synchronization</em>):</strong> Mengelola input secara bersamaan dari 36 sensor kamera di sepanjang sayap <em>carbon-fiber boom</em> selebar 120 kaki (36,5 meter) dengan pemrosesan tepi (<em>edge computing</em>) berkoneksi latensi rendah (sub-200ms).</li>
+    <li><strong>Kompensasi Gerak Dinamis & Odometri Visual:</strong> Menghubungkan kecepatan translasi traktor dan dinamika kemiringan boom dengan model proyeksi koordinat kamera agar nozzle dapat menyemprot titik tanah secara tepat.</li>
+  </ol>
+
+  <!-- b. Penerapan -->
+  <h3 class="sub-heading">b. Penerapan (Real-World Application)</h3>
+  <p>Penerapan teknologi ini berada di ranah <strong>Pertanian Presisi (<em>Smart Precision Agriculture</em>)</strong>, khususnya pada subsistem <em>Targeted / Site-Specific Herbicide Application</em>.</p>
+  <p>Di dunia nyata, petani skala besar biasanya menerapkan metode <em>broadcast spraying</em>, yaitu menyemprotkan pestisida secara merata ke seluruh areal lahan. Hal ini menyebabkan pemborosan cairan kimia dalam jumlah sangat besar, pencemaran tanah dan sumber air bawah tanah, serta memicu percepatan kekebalan (resistensi) pada gulma. Melalui <em>See & Spray™ Ultimate</em>, herbisida hanya disemprotkan secara selektif ke gulma pengganggu, sementara tanaman pangan utama tetap terlindungi.</p>
+
+  <!-- c. Cara Kerja -->
+  <h3 class="sub-heading">c. Cara Kerja (System Architecture & Pipeline)</h3>
+  <p>Pipeline pemrosesan visi komputer dan aktuasi sistem bekerja dalam hitungan sepersekian detik secara terstruktur:</p>
+
+  <div class="pipeline-wrapper">
+[ Akuisisi Citra ] ──> [ Preprocessing ] ──> [ Inferensi Deep Learning (VPU) ]
+   (36 Kamera)            (Koreksi Cahaya)         (Deteksi & Klasifikasi Gulma)
+                                                                │
+                                                                ▼
+[ Laporan & Peta ] <── [ Aktuasi Nozzle ] <── [ Proyeksi Spasial & Kecepatan ]
+ (Cloud Operations)     (ExactApply PWM)            (Kalibrasi GPS & Odometri)
+  </div>
+
+  <ol class="numbered-list">
+    <li><strong>Akuisisi Citra (<em>Image Acquisition</em>):</strong> Sebanyak 36 kamera resolusi tinggi yang terpasang di sepanjang boom memindai permukaan tanah secara terus-menerus dengan kemampuan kompensasi pencahayaan otomatis.</li>
+    <li><strong>Prapemrosesan Citra (<em>Preprocessing</em>):</strong> Melakukan koreksi distorsi lensa, penyesuaian dinamis terhadap kontras bayangan awan dan pantulan sinar matahari, serta konversi format piksel ke dalam tensor matriks yang kompatibel dengan model deep learning.</li>
+    <li><strong>Inferensi Deep Learning pada Edge (VPU):</strong> <em>Vision Processing Unit</em> yang dilengkapi akselerator AI onboard memproses citra menggunakan model Convolutional Neural Network (CNN) untuk mengklasifikasikan setiap objek menjadi <em>crop</em> atau <em>weed</em>.</li>
+    <li><strong>Transformasi Koordinat Spasial & Kompensasi Kecepatan:</strong> Sistem menghitung estimasi waktu tempuh dari posisi lensa kamera menuju deretan nozzle di belakangnya dengan memperhitungkan kecepatan traktor secara real-time.</li>
+    <li><strong>Aktuasi Nozzle Presisi (<em>ExactApply™ PWM</em>):</strong> Nozzle dengan katup solenoid berkecepatan tinggi melepaskan semburan mikro herbisida hanya saat melintasi tepat di atas gulma sasaran (total siklus akuisisi hingga semprotan berdurasi <strong>kurang dari 200 ms</strong>).</li>
+    <li><strong>Telemetri dan Pemetaan Geospasial:</strong> Data titik lokasi gulma dicatat via GPS dan diunggah ke platform <em>John Deere Operations Center™</em> untuk menghasilkan peta kepadatan gulma (<em>weed map</em>).</li>
+  </ol>
+
+  <!-- d & e. Kelebihan & Kekurangan -->
+  <div class="card-grid">
+    <div class="status-card pros">
+      <h4>✓ Kelebihan Sistem</h4>
+      <ul>
+        <li><strong>Efisiensi Bahan Kimia Masif:</strong> Menghemat konsumsi herbisida non-residual sebesar <strong>60% hingga lebih dari 70%</strong>.</li>
+        <li><strong>Kecepatan Operasional Tinggi:</strong> Mampu bekerja akurat pada kecepatan hingga 12 mph (20 km/jam).</li>
+        <li><strong>Dampak Ramah Lingkungan:</strong> Mengurangi residu racun pestisida pada tanah dan ekosistem air.</li>
+        <li><strong>Mencegah Resistensi Gulma:</strong> Mendukung teknologi tangki ganda (<em>Dual-Product System</em>) untuk rotasi bahan aktif kimia secara tepat.</li>
+      </ul>
+    </div>
+
+    <div class="status-card cons">
+      <h4>✗ Kekurangan & Tantangan</h4>
+      <ul>
+        <li><strong>Biaya Investasi Awal Tinggi:</strong> Harga mesin dan modul sensor yang mahal belum terjangkau untuk petani skala kecil.</li>
+        <li><strong>Sensitivitas Lingkungan Ekstrem:</strong> Debu tebal, cipratan lumpur, dan sinar backlight matahari dapat mengaburkan lensa kamera.</li>
+        <li><strong>Kebutuhan Dataset Pelatihan yang Masif:</strong> Gulma memiliki keragaman morfologi tinggi antar wilayah dan musim tanam.</li>
+        <li><strong>Kompleksitas Kalibrasi & Perawatan:</strong> Memerlukan teknisi khusus untuk pemeliharaan 36 unit kamera dan pendingin VPU.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- f. Peluang Pengembangan -->
+  <h3 class="sub-heading">f. Peluang Pengembangan (Future Opportunities)</h3>
+  <ul class="bullet-list">
+    <li><strong>Integrasi Sensor Hiperspektral & NIR:</strong> Menambahkan kanal spektral inframerah untuk mendeteksi tanda-tanda awal defisiensi unsur hara (nitrogen/fosfor), tingkat hidrasi tanaman, serta infeksi jamur mikroskopis sebelum tampak secara kasat mata.</li>
+    <li><strong>Pemberantasan Gulma Berbasis Laser (Zero-Chemical Weeding):</strong> Mengganti bahan kimia dengan laser terarah berdaya tinggi (seperti pada <em>LaserWeeder</em>) untuk mewujudkan pertanian organik murni tanpa pestisida.</li>
+    <li><strong>Pemanfaatan Vision-Language & Foundation Models:</strong> Memanfaatkan model agronomis berbasis <em>Vision Transformers</em> (ViT) untuk mengenali gulma baru dengan metode <em>few-shot</em> atau <em>zero-shot learning</em>.</li>
+    <li><strong>Armada Robot Otonom Berukuran Kecil (<em>Swarm Robotics</em>):</strong> Mengimplementasikan sistem visi komputer ini pada robot-robot kecil bertenaga surya yang menyisir sawah secara otonom 24 jam dengan pemadatan tanah yang minimal.</li>
+  </ul>
+
+  <!-- KESIMPULAN -->
+  <h2 class="section-heading">3. Kesimpulan</h2>
+  <p>Penerapan visi komputer pada <strong>John Deere See & Spray™ Ultimate</strong> merupakan salah satu bukti nyata paling mutakhir tentang bagaimana visi komputer dan AI mentransformasi sektor pertanian modern. Dengan menggabungkan pemrosesan citra tepi, arsitektur deep learning, dan sistem kontrol nozzle berkecepatan tinggi, sistem ini terbukti berhasil memecahkan masalah pemborosan bahan kimia sekaligus menjaga produktivitas pangan global secara berkelanjutan.</p>
+
+</div>
+
+</body>
+</html>

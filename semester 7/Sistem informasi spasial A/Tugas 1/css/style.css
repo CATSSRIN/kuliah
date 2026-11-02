@@ -1,0 +1,492 @@
+/* =====================================================
+   Surabaya GIS - Visualisasi Penduduk & Bus Stop
+   ===================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    background: #f0f2f5;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    width: 380px;
+    min-width: 380px;
+    background: #ffffff;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.sidebar-header h1 {
+    font-size: 1.2em;
+    margin-bottom: 4px;
+}
+
+.sidebar-header p {
+    font-size: 0.8em;
+    opacity: 0.85;
+}
+
+.sidebar-content {
+    padding: 16px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* ===== STATS CARDS ===== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.stat-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+    border: 1px solid #e8eaed;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card .stat-value {
+    font-size: 1.4em;
+    font-weight: 700;
+    color: #1a73e8;
+    display: block;
+}
+
+.stat-card .stat-label {
+    font-size: 0.75em;
+    color: #5f6368;
+    margin-top: 4px;
+    display: block;
+}
+
+.stat-card.highlight {
+    background: linear-gradient(135deg, #e8f0fe, #d2e3fc);
+    border-color: #a8c7fa;
+}
+
+.stat-card.highlight .stat-value {
+    color: #0d47a1;
+}
+
+/* ===== SECTIONS ===== */
+.section-title {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #202124;
+    margin: 16px 0 10px 0;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #1a73e8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ===== LEGEND ===== */
+.legend-container {
+    margin-bottom: 16px;
+}
+
+.legend-gradient {
+    height: 16px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #ffffcc, #ffeda0, #feb24c, #fd8d3c, #fc4e2a, #e31a1c, #b10026);
+    margin-bottom: 6px;
+}
+
+.legend-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7em;
+    color: #5f6368;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 0.8em;
+}
+
+.legend-icon {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ===== TABLE ===== */
+.data-table-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border-radius: 8px;
+    border: 1px solid #e8eaed;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75em;
+}
+
+.data-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.data-table th {
+    background: #1a73e8;
+    color: white;
+    padding: 8px 6px;
+    text-align: left;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.data-table th:hover {
+    background: #1557b0;
+}
+
+.data-table td {
+    padding: 7px 6px;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.data-table tbody tr:hover {
+    background: #e8f0fe;
+    cursor: pointer;
+}
+
+.data-table tbody tr.active {
+    background: #d2e3fc;
+}
+
+.data-table .text-right {
+    text-align: right;
+}
+
+.ratio-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.85em;
+    font-weight: 600;
+    text-align: center;
+    min-width: 50px;
+}
+
+.ratio-badge.good {
+    background: #e6f4ea;
+    color: #137333;
+}
+
+.ratio-badge.medium {
+    background: #fef7e0;
+    color: #b06000;
+}
+
+.ratio-badge.bad {
+    background: #fce8e6;
+    color: #c5221f;
+}
+
+/* ===== MAP ===== */
+.map-container {
+    flex: 1;
+    position: relative;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+.leaflet-interactive,
+.kecamatan-polygon {
+    cursor: pointer !important;
+}
+
+/* ===== MAP INFO BOX ===== */
+.info-box {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: white;
+    padding: 14px 18px;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    max-width: 280px;
+    display: none;
+}
+
+.info-box.visible {
+    display: block;
+}
+
+.info-box h3 {
+    font-size: 1em;
+    color: #202124;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #1a73e8;
+}
+
+.info-box .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 0.85em;
+}
+
+.info-box .info-row .label {
+    color: #5f6368;
+}
+
+.info-box .info-row .value {
+    font-weight: 600;
+    color: #202124;
+}
+
+.info-box .close-btn {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    color: #5f6368;
+    line-height: 1;
+}
+
+.info-box .close-btn:hover {
+    color: #202124;
+}
+
+/* ===== LOADING OVERLAY ===== */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.loading-overlay.hidden {
+    display: none;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e8eaed;
+    border-top: 4px solid #1a73e8;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 12px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-size: 0.9em;
+    color: #5f6368;
+}
+
+.loading-step {
+    font-size: 0.75em;
+    color: #80868b;
+    margin-top: 4px;
+}
+
+/* ===== LAYER TOGGLES ===== */
+.layer-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.layer-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 0.85em;
+}
+
+.layer-toggle:hover {
+    background: #e8f0fe;
+}
+
+.layer-toggle input[type="checkbox"] {
+    accent-color: #1a73e8;
+    width: 16px;
+    height: 16px;
+}
+
+/* ===== CUSTOM POPUP ===== */
+.custom-popup .leaflet-popup-content-wrapper {
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.custom-popup .leaflet-popup-content {
+    margin: 12px 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.popup-title {
+    font-weight: 700;
+    font-size: 1em;
+    color: #202124;
+    margin-bottom: 6px;
+}
+
+.popup-info {
+    font-size: 0.85em;
+    color: #5f6368;
+    line-height: 1.6;
+}
+
+.popup-info strong {
+    color: #202124;
+}
+
+/* ===== BUS STOP MARKER ===== */
+.bus-stop-icon {
+    background: #1a73e8;
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== CHART CONTAINER ===== */
+.chart-container {
+    margin-bottom: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid #e8eaed;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        min-width: unset;
+        height: 40vh;
+        order: 2;
+    }
+    
+    .map-container {
+        height: 60vh;
+        order: 1;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+.sidebar-content::-webkit-scrollbar,
+.data-table-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-content::-webkit-scrollbar-track,
+.data-table-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb,
+.data-table-container::-webkit-scrollbar-thumb {
+    background: #dadce0;
+    border-radius: 3px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover,
+.data-table-container::-webkit-scrollbar-thumb:hover {
+    background: #80868b;
+}
+
+/* ===== STATUS BADGES ===== */
+.status-ok {
+    color: #137333;
+}
+
+.status-warning {
+    color: #b06000;
+}
+
+.status-error {
+    color: #c5221f;
+}
+
+/* ===== FOOTER ===== */
+.sidebar-footer {
+    padding: 10px 16px;
+    background: #f8f9fa;
+    border-top: 1px solid #e8eaed;
+    font-size: 0.7em;
+    color: #80868b;
+    text-align: center;
+}
+
+.sidebar-footer a {
+    color: #1a73e8;
+    text-decoration: none;
+}
+
+.sidebar-footer a:hover {
+    text-decoration: underline;
+}
