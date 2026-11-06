@@ -65,44 +65,45 @@ function initMap() {
 }
 
 /**
- * Muat semua data secara paralel
+ * Muat semua data secara paralel dan terurut
  */
 async function loadAllData() {
-    updateLoading('Memuat data penduduk...');
+    updateLoading('Memuat data kependudukan BPS...');
 
     try {
-        // Muat data penduduk terlebih dahulu
+        // 1. Muat data kependudukan dari BPS
         const pendudukResponse = await fetch('api/penduduk.php');
         if (!pendudukResponse.ok) throw new Error('Gagal memuat data penduduk');
         const pendudukResult = await pendudukResponse.json();
         pendudukData = pendudukResult.kecamatan;
 
-        updateLoading('Memuat lokasi bus stop dari OpenStreetMap...');
+        updateLoading('Memuat batas wilayah spasial kecamatan...');
 
-        // Muat bus stop dari Overpass API
-        const busStopResponse = await fetch('api/overpass_proxy.php?type=busstop');
-        if (!busStopResponse.ok) throw new Error('Gagal memuat data bus stop');
-        const busStopResult = await busStopResponse.json();
-        processBusStopData(busStopResult);
-
-        updateLoading('Memuat batas wilayah kecamatan...');
-
-        // Muat batas kecamatan dari Overpass API (dengan graceful fallback)
+        // 2. Muat batas spasial kecamatan dari Overpass API (diperlukan sebelum proses bus stop)
         try {
             const kecamatanResponse = await fetch('api/overpass_proxy.php?type=kecamatan');
             if (kecamatanResponse.ok) {
                 const kecamatanResult = await kecamatanResponse.json();
                 processKecamatanData(kecamatanResult);
             } else {
+                console.warn('Gagal memuat batas polygon kecamatan, beralih ke fallback');
                 useFallbackKecamatan();
             }
         } catch (errKec) {
-            console.warn('Gagal memuat batas polygon kecamatan, beralih ke mode fallback:', errKec);
+            console.warn('Batas kecamatan error, beralih ke fallback:', errKec);
             useFallbackKecamatan();
         }
 
-        // Proses render tampilan
-        updateLoading('Merender visualisasi GIS...');
+        updateLoading('Memuat lokasi bus stop dari OpenStreetMap...');
+
+        // 3. Muat titik bus stop dan lakukan kalkulasi spasial Point-in-Polygon
+        const busStopResponse = await fetch('api/overpass_proxy.php?type=busstop');
+        if (!busStopResponse.ok) throw new Error('Gagal memuat data bus stop');
+        const busStopResult = await busStopResponse.json();
+        processBusStopData(busStopResult);
+
+        // 4. Render tampilan visual GIS
+        updateLoading('Merender visualisasi GIS & menghitung rasio...');
 
         if (kecamatanGeoJSON && kecamatanGeoJSON.features && kecamatanGeoJSON.features.length > 0) {
             renderChoropleth();
@@ -151,6 +152,8 @@ function processKecamatanData(overpassData) {
                 if (kec && !processedKec.has(kec.nama)) {
                     feature.properties.kecData = kec;
                     feature.properties.cleanName = kec.nama;
+                    // Precompute bounding box untuk query spasial super cepat
+                    feature._bbox = computeGeometryBbox(feature.geometry);
                     matchedFeatures.push(feature);
                     processedKec.add(kec.nama);
                 }
@@ -238,23 +241,57 @@ function processBusStopData(overpassData) {
 
 /**
  * Menghitung jumlah bus stop per kecamatan
- * Mengalokasikan setiap bus stop ke kecamatan terdekat secara efisien
+ * Menggunakan analisis spasial sejati (Point-in-Polygon Ray Casting)
+ * dengan fallback nearest-centroid jika halte di tepi luar batas jalan.
  */
 function assignBusStopsToKecamatan() {
-    // Reset counter
+    // Reset counter dan daftar halte di setiap kecamatan
     pendudukData.forEach(kec => {
         kec.busStopCount = 0;
         kec.busStops = [];
     });
 
-    // Petakan setiap bus stop ke kecamatan terdekat (centroid analysis)
+    const hasPolygons = kecamatanGeoJSON && kecamatanGeoJSON.features && kecamatanGeoJSON.features.length > 0;
+    const features = hasPolygons ? kecamatanGeoJSON.features : [];
+
     busStopData.forEach(stop => {
-        const nearest = findNearestKecamatan(stop.lat, stop.lon);
-        if (nearest) {
-            nearest.busStopCount++;
-            nearest.busStops.push(stop);
+        let assignedKec = null;
+
+        // 1. Coba Point-in-Polygon (PIP) ke batas spasial poligon resmi
+        if (hasPolygons) {
+            for (let i = 0; i < features.length; i++) {
+                const feat = features[i];
+                const bbox = feat._bbox;
+
+                // Bounding box filter (cepat, menghindari ray casting jika di luar kotak)
+                if (bbox && (stop.lat < bbox.minLat || stop.lat > bbox.maxLat || stop.lon < bbox.minLon || stop.lon > bbox.maxLon)) {
+                    continue;
+                }
+
+                // Ray casting sesungguhnya pada poligon ring
+                if (isPointInGeoJSON(stop.lat, stop.lon, feat.geometry)) {
+                    assignedKec = feat.properties.kecData;
+                    break;
+                }
+            }
+        }
+
+        // 2. Jika tidak masuk poligon manapun (misal di bahu jalan perbatasan), alokasikan ke kecamatan terdekat
+        if (!assignedKec) {
+            assignedKec = findNearestKecamatan(stop.lat, stop.lon);
+        }
+
+        if (assignedKec) {
+            assignedKec.busStopCount++;
+            assignedKec.busStops.push(stop);
+            stop.kecamatan = assignedKec.nama;
+        } else {
+            stop.kecamatan = 'Kota Surabaya';
         }
     });
+
+    console.log('Alokasi spasial bus stop selesai. Krembangan terhitung:', 
+        (pendudukData.find(k => k.nama === 'Krembangan') || {}).busStopCount, 'halte.');
 }
 
 // ==================== RENDERING ====================
@@ -346,6 +383,7 @@ function renderBusStops() {
         let popupHtml = `
             <div class="popup-title">🚌 ${stop.name}</div>
             <div class="popup-info">
+                <strong>Kecamatan:</strong> Kec. ${stop.kecamatan || '-'}<br>
                 <strong>Operator:</strong> ${stop.operator}<br>
                 <strong>Rute:</strong> ${stop.route_ref}<br>
                 <strong>Shelter:</strong> ${stop.shelter}<br>
@@ -597,17 +635,82 @@ function findNearestKecamatan(lat, lon) {
 }
 
 /**
- * Cek apakah titik berada di dalam GeoJSON feature (simplified)
+ * Menghitung Bounding Box dari sebuah geometri GeoJSON
  */
-function isPointInFeature(point, feature) {
-    try {
-        // Gunakan Leaflet GeoJSON bounds sebagai approximation
-        const layer = L.geoJSON(feature);
-        const bounds = layer.getBounds();
-        return bounds.contains(point);
-    } catch (e) {
-        return false;
+function computeGeometryBbox(geometry) {
+    if (!geometry || !geometry.coordinates) return null;
+    let minLat = Infinity, maxLat = -Infinity;
+    let minLon = Infinity, maxLon = -Infinity;
+
+    function processCoords(coords) {
+        if (typeof coords[0] === 'number') {
+            const lon = coords[0];
+            const lat = coords[1];
+            if (lat < minLat) minLat = lat;
+            if (lat > maxLat) maxLat = lat;
+            if (lon < minLon) minLon = lon;
+            if (lon > maxLon) maxLon = lon;
+        } else {
+            for (let i = 0; i < coords.length; i++) {
+                processCoords(coords[i]);
+            }
+        }
     }
+
+    processCoords(geometry.coordinates);
+    return { minLat, maxLat, minLon, maxLon };
+}
+
+/**
+ * Algoritma Ray-Casting untuk menentukan apakah titik [lon, lat] berada di dalam polygon ring
+ */
+function pointInRing(pt, ring) {
+    const x = pt[0], y = pt[1];
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        const xi = ring[i][0], yi = ring[i][1];
+        const xj = ring[j][0], yj = ring[j][1];
+        const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+    return inside;
+}
+
+/**
+ * Cek apakah titik koordinat berada di dalam geometri Polygon / MultiPolygon GeoJSON
+ */
+function isPointInGeoJSON(lat, lon, geometry) {
+    if (!geometry || !geometry.coordinates) return false;
+    const pt = [lon, lat];
+
+    if (geometry.type === 'Polygon') {
+        const rings = geometry.coordinates;
+        if (!rings || rings.length === 0) return false;
+        // Outer ring check
+        if (!pointInRing(pt, rings[0])) return false;
+        // Inner rings (holes) check
+        for (let i = 1; i < rings.length; i++) {
+            if (pointInRing(pt, rings[i])) return false;
+        }
+        return true;
+    } else if (geometry.type === 'MultiPolygon') {
+        const polys = geometry.coordinates;
+        if (!polys) return false;
+        for (let p = 0; p < polys.length; p++) {
+            const rings = polys[p];
+            if (rings && rings.length > 0 && pointInRing(pt, rings[0])) {
+                let inHole = false;
+                for (let h = 1; h < rings.length; h++) {
+                    if (pointInRing(pt, rings[h])) {
+                        inHole = true;
+                        break;
+                    }
+                }
+                if (!inHole) return true;
+            }
+        }
+    }
+    return false;
 }
 
 /**

@@ -54,7 +54,7 @@ $data = [
             "penduduk" => 82440,
             "luas" => 6.80,
             "kelurahan" => 5,
-            "lat" => -7.2323,
+            "lat" => -7.2260,
             "lon" => 112.7357
         ],
         [
@@ -62,24 +62,24 @@ $data = [
             "penduduk" => 190120,
             "luas" => 8.76,
             "kelurahan" => 5,
-            "lat" => -7.2271,
-            "lon" => 112.7519
+            "lat" => -7.2185,
+            "lon" => 112.7485
         ],
         [
             "nama" => "Krembangan",
             "penduduk" => 119800,
             "luas" => 8.34,
             "kelurahan" => 5,
-            "lat" => -7.2339,
-            "lon" => 112.7172
+            "lat" => -7.2285,
+            "lon" => 112.7295
         ],
         [
             "nama" => "Kenjeran",
             "penduduk" => 154670,
             "luas" => 7.77,
             "kelurahan" => 4,
-            "lat" => -7.2328,
-            "lon" => 112.7869
+            "lat" => -7.2240,
+            "lon" => 112.7750
         ],
         [
             "nama" => "Bulak",
@@ -166,8 +166,8 @@ $data = [
             "penduduk" => 72480,
             "luas" => 9.23,
             "kelurahan" => 4,
-            "lat" => -7.3261,
-            "lon" => 112.7028
+            "lat" => -7.3320,
+            "lon" => 112.6930
         ],
         [
             "nama" => "Dukuh Pakis",
